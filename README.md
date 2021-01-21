@@ -42,18 +42,21 @@ data model.  The paint event handler (above) looks after the rest.
 The triangle class includes the following properties:
 * color
 * orientation (right way up / upside down)
-* x,y position
+* bounds (a rectangle)
 * parent (a hexagon)
 
 And the following methods:
-* a draw() method
+* draw() - draws this triangle
+* contains() - returns true if p falls within this triangle
 
 ### Hexagon Class
 The hexagon class includes the following properties:
 * list of triangles (6)
+* bounds (a rectangle)
 
 And the following methods:
-* a draw() method
+* draw() - draws this hexagon (including the triangles it contains)
+* contains() - returns true if p falls within this hexagon
 
 ## Puzzle file format
 (To be defined)
