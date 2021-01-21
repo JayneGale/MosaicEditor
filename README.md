@@ -48,6 +48,7 @@ And the following methods:
 The hexagon class includes the following properties:
 * list of triangles (6)
 * bounds (a rectangle)
+* active (a boolean) - only "active" hexagons are included in the puzzle
 
 And the following methods:
 * draw() - draws this hexagon (including the triangles it contains)
