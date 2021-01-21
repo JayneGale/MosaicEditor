@@ -2,10 +2,13 @@
 A Windows Forms app to edit puzzles for the Velocity Studio "Mosaic" hex puzzle web app.
 
 ### Introduction
-This application provides a simple graphical editor for hexagonal puzzle patterns.  It saves and reads patterns in a file format understood by and shared by the Mosaic web app.
+This application is a hex puzzle design tool.  It provides a simple graphical editor for hexagonal puzzle patterns, and saves and reads these patterns in a file format understood by and shared by the Mosaic web app.
+
+### Mosaic Web App
+This is our hexagonal puzzle app, a web app written primarily in javascript.  Each puzzle is a collection of coloured hexagons, which the player must work out how to solve.  This Windows app is concerned only with the production of puzzle designs for that puzzle app.
 
 ### User Interface
-When started this application displays a window filled with blank triangles, grouped into hexagons.
+When started this application displays a window filled with hexagons, each divided into six triangles.
 
 The user can either load an existing pattern for editing (**File | Open**), or just start creating a new pattern on the blank canvas.
 
