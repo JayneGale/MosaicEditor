@@ -59,6 +59,8 @@ And the following methods:
 * contains() - returns true if p falls within this hexagon
 
 ## Puzzle file format
+This describes the format of the output file, which is compatible with the Mosaic Puzzle web application.  This editor can also read this format.
+
 (To be defined)
 
 
