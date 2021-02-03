@@ -10,24 +10,30 @@ namespace Mosaic_editor.Classes
 {
     class Hexagon
     {
-        internal List<Triangle> triangles;
-        internal int x;
-        internal int y;
-        internal bool isActive;
+        public List<Triangle> triangles;
+        public int row;
+        public int col;
+        public bool isActive;
+
+        internal bool isFixed = false;
+        internal bool isSelected = false;
 
         // The box which defines the bounds of this hexagon
-        public Rectangle bounds;
+        internal Rectangle bounds;
 
         // The path which defines the outline of this hexagon
         private GraphicsPath outline;
 
-        public Hexagon(int x, int y, int gridSpacing)
+        public Hexagon(int row, int col, int x, int y, int gridSpacing)
         {
             bool upsideDown = false;
 
+            this.row = row;
+            this.col = col;
+
             // These are the screen coordinates of the centre of the hexagon
-            int hexX = x;
-            int hexY = y;
+            int xCentre = x;
+            int yCentre = y;
 
             int height = (int)(Constants.COS30 * gridSpacing);
             var width = gridSpacing;
@@ -48,22 +54,22 @@ namespace Mosaic_editor.Classes
                 switch (i)
                 {
                     case 0:
-                        t.bounds = new Rectangle(hexX, hexY - height, width, height);
+                        t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
                         break;
                     case 1:
-                        t.bounds = new Rectangle(hexX, hexY, width, height);
+                        t.bounds = new Rectangle(xCentre, yCentre, width, height);
                         break;
                     case 2:
-                        t.bounds = new Rectangle(hexX - (width / 2), hexY, width, height);
+                        t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
                         break;
                     case 3:
-                        t.bounds = new Rectangle(hexX - width, hexY, width, height);
+                        t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
                         break;
                     case 4:
-                        t.bounds = new Rectangle(hexX - width, hexY - height, width, height);
+                        t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
                         break;
                     case 5:
-                        t.bounds = new Rectangle(hexX - (width / 2), hexY - height, width, height);
+                        t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
                         break;
                 }
                 upsideDown = !upsideDown;
@@ -92,12 +98,12 @@ namespace Mosaic_editor.Classes
             var y1 = bounds.Top + bounds.Height / 2;
 
             outline.AddPolygon(new Point[] {
-                new Point(x1, bounds.Top + 2),
-                new Point(x2, bounds.Top + 2),
-                new Point(bounds.Right - 2, y1),
-                new Point(x2, bounds.Bottom - 2),
-                new Point(x1, bounds.Bottom - 2),
-                new Point(bounds.Left + 2, y1)
+                new Point(x1, bounds.Top),
+                new Point(x2, bounds.Top),
+                new Point(bounds.Right, y1),
+                new Point(x2, bounds.Bottom),
+                new Point(x1, bounds.Bottom),
+                new Point(bounds.Left, y1)
             });
         }
 
@@ -120,13 +126,19 @@ namespace Mosaic_editor.Classes
             if (isActive)
             {
                 // Draw my six triangles first
-                triangles.ForEach(t => t.draw(g));
+                triangles.ForEach(t => t.draw(g, isFixed));
                 pen.Color = Color.DarkGray;
-                pen.Width = 2;
+                pen.Width = 3;  // pen for hex outline
             }
             else
             {
                 triangles.ForEach(t => t.draw(g));
+            }
+
+            if (isSelected)
+            {
+                pen.Color = Color.Red;
+                pen.DashStyle = DashStyle.Dash;
             }
 
             // Draw hexagon outline

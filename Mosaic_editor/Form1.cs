@@ -29,28 +29,46 @@ namespace Mosaic_editor
             puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height);
         }
 
+
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
-            Debug.Print($"You clicked on {e.X}, {e.Y}");
+            Debug.Print($"You clicked on {e.X}, {e.Y} ({e.Button})");
 
             // What triangle was that?
             Triangle selectedTriangle = puzzle.checkForClick(e.Location);
             if (selectedTriangle != null)
             {
                 // We've found it!
-                Console.WriteLine($"Changing color to {palette.currentColour}");
-                // Toggle colour
-                if (selectedTriangle.color == palette.currentColour)
+                if (e.Button == MouseButtons.Left)
                 {
-                    selectedTriangle.color = Constants.BLANK_COLOR;
+                    if (Control.ModifierKeys == Keys.Shift)
+                    {
+                        selectedTriangle.parent.clear();
+                    }
+                    else
+                    {
+                        Console.WriteLine($"Changing color to {palette.currentColour}");
+                        // Toggle colour
+                        if (selectedTriangle.color == palette.currentColour)
+                        {
+                            selectedTriangle.color = Constants.BLANK_COLOR;
+                        }
+                        else
+                        {
+                            // selectedTriangle.isActive = true;
+                            selectedTriangle.color = palette.currentColour;
+                        }
+                        selectedTriangle.isActive = true;
+                    }
                 }
-                else
+                else if (e.Button == MouseButtons.Right)
                 {
-                    selectedTriangle.color = palette.currentColour;
+                    // Just select; don't change the colour
                 }
                 puzzle.refresh();
                 pictureBox1.Invalidate();   // force a redraw
             }
+
         }
 
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
@@ -67,7 +85,33 @@ namespace Mosaic_editor
             if (MessageBox.Show("Reset this puzzle?", "Confirm Clear", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 puzzle.clear();
+                if (puzzle.selectedHexagon != null)
+                {
+                    puzzle.selectedHexagon.isSelected = false;
+                    puzzle.selectedHexagon = null;
+                }
+                pictureBox1.Invalidate();
             }
         }
+
+        private void fixedToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            if (puzzle.selectedHexagon != null)
+            {
+                puzzle.selectedHexagon.isFixed = !puzzle.selectedHexagon.isFixed;
+                pictureBox1.Invalidate();
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            puzzle.save(palette);
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            puzzle.load(palette);
+        }
+
     }
 }

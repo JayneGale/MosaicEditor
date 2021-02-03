@@ -8,3 +8,6 @@ D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.Ge
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CoreCompileInputs.cache
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.exe
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.pdb
+D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
+D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
+D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete

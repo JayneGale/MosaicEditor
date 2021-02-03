@@ -10,16 +10,11 @@ namespace Mosaic_editor.Classes
 {
     class Triangle
     {
-        internal Color color;
+        public Color color;
         internal Hexagon parent;
         internal bool upsideDown;
-        internal bool isActive
-        {
-            get
-            {
-                return color != Constants.BLANK_COLOR;
-            }
-        }
+
+        public bool isActive;
 
         // The bounding box of this triangle
         internal Rectangle bounds;
@@ -30,6 +25,7 @@ namespace Mosaic_editor.Classes
         /// The constructor for Triangle
         internal Triangle()
         {
+            isActive = false;
             color = Constants.BLANK_COLOR;  // the default
         }
 
@@ -60,15 +56,19 @@ namespace Mosaic_editor.Classes
         /// Draw this triangle - fill and outline.
         /// </summary>
         /// <param name="g"></param>
-        internal void draw(Graphics g)
+        internal void draw(Graphics g, bool isFixed = false)
         {
             calculateOutline();
             // Draw and fill this triangle
 
             var pen = new Pen(Color.Black, 1);
-            if (isActive)
+            if (parent.isActive)
             {
-                var brush = new SolidBrush(color);
+                Brush brush = new SolidBrush(color);
+                if (isFixed)
+                {
+                    brush = new HatchBrush(HatchStyle.Percent40, color, Color.White);
+                }
                 g.FillPath(brush, outline);
             }
             else
@@ -127,7 +127,9 @@ namespace Mosaic_editor.Classes
         /// </summary>
         internal void clear()
         {
+            isActive = false;
             color = Constants.BLANK_COLOR;
         }
+
     }
 }

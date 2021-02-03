@@ -1,19 +1,24 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 namespace Mosaic_editor.Classes
 {
     class Puzzle
     {
-        internal List<Hexagon> HexagonList;
+        public List<Hexagon> HexagonList;
 
         // Limit the maximum number of hexagons
         const int WIDTH_LIMIT = 50;
         const int HEIGHT_LIMIT = 50;
+
+        internal Hexagon selectedHexagon = null;
         
         /// <summary>
         /// The constructor takes the dimensions of the picture box as parameters, and
@@ -44,13 +49,14 @@ namespace Mosaic_editor.Classes
             int x0 = 0; // the starting offset for each row
 
             int y = dy;
+            int col0 = 0;
             for (int row = 0; row < HEIGHT_LIMIT; row++)
             {
                 x = x0 + Constants.GRID_SPACING;
 
-                for (int col = 0; col < WIDTH_LIMIT; col++)
+                for (int col = col0; col < WIDTH_LIMIT; col += 2)
                 {
-                    var hex = new Hexagon(x, y, Constants.GRID_SPACING);
+                    var hex = new Hexagon(row, col, x, y, Constants.GRID_SPACING);
                     // HexagonArray[x, y] = hex;
                     HexagonList.Add(hex);
                     x += dx;
@@ -59,6 +65,7 @@ namespace Mosaic_editor.Classes
                 x0 = (int)(Constants.GRID_SPACING * 1.5) - x0;   // this handles the alternating row offsets
                 y += dy;
                 if (y + Constants.GRID_SPACING > height) break;
+                col0 = 1 - col0;
             }
         }
 
@@ -81,7 +88,13 @@ namespace Mosaic_editor.Classes
             foreach (var hex in HexagonList)
             {
                 Triangle clickedTriangle = hex.checkForClick(location);
-                if (clickedTriangle != null) return clickedTriangle;
+                if (clickedTriangle != null)
+                {
+                    if (selectedHexagon != null) selectedHexagon.isSelected = false;
+                    selectedHexagon = clickedTriangle.parent;
+                    selectedHexagon.isSelected = true;
+                    return clickedTriangle;
+                }
             }
             return null;
         }
@@ -109,16 +122,99 @@ namespace Mosaic_editor.Classes
         /// <summary>
         /// TODO
         /// </summary>
-        internal void load()
+        internal void load(ColourPalette palette)
         {
+            var dlg = new OpenFileDialog();
+            dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            dlg.Filter = "JSON files|*.json";
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
 
+            }
         }
 
         /// <summary>
         /// TODO
         /// </summary>
-        internal void save()
+        internal void save(ColourPalette palette)
         {
+            var activeHexagons = HexagonList.Where(h => h.isActive);    // LINQ
+
+            if (activeHexagons.Count() == 0) return;
+
+            var colMin = activeHexagons.Select(h => h.col).Min();
+            var colMax = activeHexagons.Select(h => h.col).Max();
+            var rowMin = activeHexagons.Select(h => h.row).Min();
+            var rowMax = activeHexagons.Select(h => h.row).Max();
+
+            Console.WriteLine($"crop: {colMin},{rowMin} - {colMax},{ rowMax}");
+
+            var usedHexagons = HexagonList.Where(h => h.row >= rowMin && h.row <= rowMax && h.col >= colMin && h.col <= colMax);
+
+            /*
+                 [
+                    "ABABABA BDBDBDBD DEDEDED XXXXXX -------",
+                    "ABABABA BDBDBDBD DEDEDED! XXXXXX -------",
+                    "ABABABA -------- DEDEDED XXXXXX -------
+                 ]
+             */
+            var json = new StringBuilder("[");
+            for (int row = rowMin; row <= rowMax; row++)
+            {
+                var rowOfHexes = usedHexagons.Where(h => h.row == row).OrderBy(h => h.col);
+                json.Append("\"");
+
+                var line = "";
+
+                var firstHex = rowOfHexes.FirstOrDefault();
+                if (firstHex != null)
+                {
+                    var indented = (firstHex.col - colMin) > 0;
+                    if (indented) line += "> ";
+                }
+
+                foreach (var hex in rowOfHexes)
+                {
+                    if (hex.isActive)
+                    {
+                        foreach (var t in hex.triangles)
+                        {
+                            line += palette.getColourPalette(t.color);    // TODO
+                        }
+                        if (hex.isFixed) line += "!";
+                        line += " ";
+                    }
+                    else
+                    {
+                        line += "------ ";
+                    }
+                }
+                json.AppendLine(line.Trim() + "\",");
+            }
+            json.AppendLine("]");
+
+            // var json = JsonConvert.SerializeObject(usedHexagons);
+
+            var result = $@"
+    {{
+        name: 'My Puzzle 1',
+        difficulty: 'Very hard!',
+        date: '',
+        puzzle: {json.ToString()};
+    }}
+";
+
+            Console.WriteLine(result);
+
+            var dlg = new SaveFileDialog();
+            dlg.Filter = "JSON files|*.json";
+            dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            dlg.FileName = "mosaic puzzles.json";
+            if (dlg.ShowDialog() == DialogResult.OK)
+            {
+                Console.WriteLine($"Saving to {dlg.FileName}");
+                File.WriteAllText(dlg.FileName, result);
+            }
 
         }
     }

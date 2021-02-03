@@ -14,6 +14,16 @@ namespace Mosaic_editor.Classes
 
         private ToolStripButton current;
 
+        Color[] colors = new Color[] {
+                Constants.BLANK_COLOR,
+                Color.Red,
+                Color.Blue,
+                Color.Green,
+                Color.Cyan,
+                Color.Yellow,
+                Color.Orange
+            };
+
         public ColourPalette(ToolStrip toolStrip)
         {
             toolStrip.Items.Clear();
@@ -30,15 +40,6 @@ namespace Mosaic_editor.Classes
                 Text = "Colours:"
             });
 
-            Color[] colors = new Color[] {
-                Constants.BLANK_COLOR,
-                Color.Red,
-                Color.Blue,
-                Color.Green,
-                Color.Cyan,
-                Color.Yellow,
-                Color.Orange
-            };
             foreach(var c in colors)
             {
                 var b = new ToolStripButton
@@ -53,7 +54,23 @@ namespace Mosaic_editor.Classes
                 };
                 toolStrip.Items.Add(b);
             }
+
+            toolStrip.Items.Add(new ToolStripLabel
+            {
+                Text = "Click anywhere to set colours.  Right-click to select without changing the colour.  Shift-click to erase a hexagon."
+            });
+
         }
 
+        internal string getColourPalette(Color color)
+        {
+            for(int i = 0; i < colors.Length; i++) {
+                if (colors[i] == color)
+                {
+                    return i.ToString();
+                }
+            }
+            return "?";
+        }
     }
 }
