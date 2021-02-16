@@ -8,7 +8,26 @@ D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.Ge
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CoreCompileInputs.cache
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.exe
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.pdb
+<<<<<<< Updated upstream
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete
+<<<<<<< Updated upstream
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic_editor.frmResizePuzzle.resources
+=======
+=======
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Mosaic editor.exe.config
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Mosaic editor.exe
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Mosaic editor.pdb
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.csprojResolveAssemblyReference.cache
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic_editor.Form1.resources
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic_editor.Properties.Resources.resources
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.csproj.GenerateResource.cache
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CoreCompileInputs.cache
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.exe
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.pdb
+>>>>>>> Stashed changes
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
+D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete
+>>>>>>> Stashed changes
