@@ -11,3 +11,4 @@ D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.pdb
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete
+D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic_editor.frmResizePuzzle.resources

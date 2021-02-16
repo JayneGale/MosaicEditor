@@ -39,10 +39,11 @@ namespace Mosaic_editor
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.resizePuzzleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -53,6 +54,7 @@ namespace Mosaic_editor
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.clearToolStripMenuItem,
+            this.resizePuzzleToolStripMenuItem,
             this.fixedToolStripMenuItem,
             this.loadImageToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
@@ -122,9 +124,16 @@ namespace Mosaic_editor
             // fixedToolStripMenuItem
             // 
             this.fixedToolStripMenuItem.Name = "fixedToolStripMenuItem";
-            this.fixedToolStripMenuItem.Size = new System.Drawing.Size(47, 20);
-            this.fixedToolStripMenuItem.Text = "Fi&xed";
+            this.fixedToolStripMenuItem.Size = new System.Drawing.Size(96, 20);
+            this.fixedToolStripMenuItem.Text = "Fi&xed hexagon";
             this.fixedToolStripMenuItem.Click += new System.EventHandler(this.fixedToolStripMenuItem_Click);
+            // 
+            // loadImageToolStripMenuItem
+            // 
+            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.loadImageToolStripMenuItem.Text = "Load Image";
+            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
             // 
             // pictureBox1
             // 
@@ -155,12 +164,12 @@ namespace Mosaic_editor
             this.toolStripLabel1.Size = new System.Drawing.Size(212, 16);
             this.toolStripLabel1.Text = "(This toolstrip is populated at run time)";
             // 
-            // loadImageToolStripMenuItem
+            // resizePuzzleToolStripMenuItem
             // 
-            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
-            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
-            this.loadImageToolStripMenuItem.Text = "Load Image";
-            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            this.resizePuzzleToolStripMenuItem.Name = "resizePuzzleToolStripMenuItem";
+            this.resizePuzzleToolStripMenuItem.Size = new System.Drawing.Size(87, 20);
+            this.resizePuzzleToolStripMenuItem.Text = "Resize puzzle";
+            this.resizePuzzleToolStripMenuItem.Click += new System.EventHandler(this.resizePuzzleToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -200,6 +209,7 @@ namespace Mosaic_editor
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixedToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem loadImageToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem resizePuzzleToolStripMenuItem;
     }
 }
 

@@ -14,6 +14,8 @@ namespace Mosaic_editor.Classes
     {
         public List<Hexagon> HexagonList;
 
+        public int GridSpacing = 100;
+
         // Limit the maximum number of hexagons
         const int WIDTH_LIMIT = 50;
         const int HEIGHT_LIMIT = 50;
@@ -26,9 +28,9 @@ namespace Mosaic_editor.Classes
         /// </summary>
         /// <param name="width"></param>
         /// <param name="height"></param>
-        public Puzzle(int width, int height)
+        public Puzzle(int width, int height, int gridSpacing)
         {
-            // this.gridSpacing = gridSpacing;
+            this.GridSpacing = gridSpacing;
             CreateHexArray(width, height);
         }
 
@@ -43,8 +45,8 @@ namespace Mosaic_editor.Classes
             // EVEN rows (0, 2, 4, ..) start from x = gridSpacing
             // ODD rows (1, 3, 5, ..) start from x = 1.5 times the gridSpacing
 
-            int dx = 3 * Constants.GRID_SPACING;
-            int dy = (int)(Constants.GRID_SPACING * Constants.COS30);
+            int dx = 3 * GridSpacing;
+            int dy = (int)(GridSpacing * Constants.COS30);
             int x;
             int x0 = 0; // the starting offset for each row
 
@@ -52,19 +54,19 @@ namespace Mosaic_editor.Classes
             int col0 = 0;
             for (int row = 0; row < HEIGHT_LIMIT; row++)
             {
-                x = x0 + Constants.GRID_SPACING;
+                x = x0 + GridSpacing;
 
                 for (int col = col0; col < WIDTH_LIMIT; col += 2)
                 {
-                    var hex = new Hexagon(row, col, x, y, Constants.GRID_SPACING);
+                    var hex = new Hexagon(row, col, x, y, GridSpacing);
                     // HexagonArray[x, y] = hex;
                     HexagonList.Add(hex);
                     x += dx;
-                    if (x + Constants.GRID_SPACING > width) break;
+                    if (x + GridSpacing > width) break;
                 }
-                x0 = (int)(Constants.GRID_SPACING * 1.5) - x0;   // this handles the alternating row offsets
+                x0 = (int)(GridSpacing * 1.5) - x0;   // this handles the alternating row offsets
                 y += dy;
-                if (y + Constants.GRID_SPACING > height) break;
+                if (y + GridSpacing > height) break;
                 col0 = 1 - col0;
             }
         }

@@ -27,7 +27,7 @@ namespace Mosaic_editor
         private void Form1_Load(object sender, EventArgs e)
         {
             // Note: puzzle does not resize / redraw if the user resizes the window.
-            puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height);
+            puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, Constants.DEFAULT_GRID_SPACING);
         }
 
 
@@ -132,6 +132,18 @@ namespace Mosaic_editor
                         image.Dispose();
                     }
                 }
+            }
+        }
+
+        private void resizePuzzleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dlg = new frmResizePuzzle();
+            dlg.GridSize = puzzle.GridSpacing;
+            if (dlg.ShowDialog() == DialogResult.OK) 
+            //if (MessageBox.Show("This will clear the current puzzle.  Resize the puzzle to fit the screen?", "Resize Puzzle", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
+                pictureBox1.Invalidate();
             }
         }
     }
