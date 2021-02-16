@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -113,5 +114,25 @@ namespace Mosaic_editor
             puzzle.load(palette);
         }
 
+        private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dlg = new OpenFileDialog();
+            dlg.Filter = "JPEG files|*.jpg";
+            var result = dlg.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                Debug.Print($"Loading image {dlg.FileName}");
+                if (File.Exists(dlg.FileName))
+                {
+                    // Load the image
+                    using (var image = Bitmap.FromFile(dlg.FileName))
+                    {
+                        // Process this image
+                        puzzle = PhotoInput.LoadImage(image);
+                        image.Dispose();
+                    }
+                }
+            }
+        }
     }
 }

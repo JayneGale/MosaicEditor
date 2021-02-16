@@ -42,6 +42,7 @@ namespace Mosaic_editor
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.loadImageToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -52,7 +53,8 @@ namespace Mosaic_editor
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.clearToolStripMenuItem,
-            this.fixedToolStripMenuItem});
+            this.fixedToolStripMenuItem,
+            this.loadImageToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(1161, 24);
@@ -153,6 +155,13 @@ namespace Mosaic_editor
             this.toolStripLabel1.Size = new System.Drawing.Size(212, 16);
             this.toolStripLabel1.Text = "(This toolstrip is populated at run time)";
             // 
+            // loadImageToolStripMenuItem
+            // 
+            this.loadImageToolStripMenuItem.Name = "loadImageToolStripMenuItem";
+            this.loadImageToolStripMenuItem.Size = new System.Drawing.Size(81, 20);
+            this.loadImageToolStripMenuItem.Text = "Load Image";
+            this.loadImageToolStripMenuItem.Click += new System.EventHandler(this.loadImageToolStripMenuItem_Click);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -190,6 +199,7 @@ namespace Mosaic_editor
         private System.Windows.Forms.ToolStripSeparator toolStripMenuItem1;
         private System.Windows.Forms.ToolStripMenuItem clearToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem fixedToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem loadImageToolStripMenuItem;
     }
 }
 
