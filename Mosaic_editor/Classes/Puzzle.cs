@@ -16,6 +16,9 @@ namespace Mosaic_editor.Classes
 
         public int GridSpacing = 100;
 
+        public string Name = "A First Puzzle";
+        public string Difficulty = "Hard";
+
         // Limit the maximum number of hexagons
         const int WIDTH_LIMIT = 50;
         const int HEIGHT_LIMIT = 50;
@@ -160,53 +163,54 @@ namespace Mosaic_editor.Classes
                     "ABABABA -------- DEDEDED XXXXXX -------
                  ]
              */
-            var json = new StringBuilder("[");
-            for (int row = rowMin; row <= rowMax; row++)
-            {
-                var rowOfHexes = usedHexagons.Where(h => h.row == row).OrderBy(h => h.col);
-                json.Append("\"");
+            //var json = new StringBuilder("[");
+            //for (int row = rowMin; row <= rowMax; row++)
+            //{
+            //    var rowOfHexes = usedHexagons.Where(h => h.row == row).OrderBy(h => h.col);
+            //    json.Append("\"");
 
-                var line = "";
+            //    var line = "";
 
-                var firstHex = rowOfHexes.FirstOrDefault();
-                if (firstHex != null)
-                {
-                    var indented = (firstHex.col - colMin) > 0;
-                    if (indented) line += "> ";
-                }
+            //    var firstHex = rowOfHexes.FirstOrDefault();
+            //    if (firstHex != null)
+            //    {
+            //        var indented = (firstHex.col - colMin) > 0;
+            //        if (indented) line += "> ";
+            //    }
 
-                foreach (var hex in rowOfHexes)
-                {
-                    if (hex.isActive)
-                    {
-                        foreach (var t in hex.triangles)
-                        {
-                            line += palette.getColourPalette(t.color);    // TODO
-                        }
-                        if (hex.isFixed) line += "!";
-                        line += " ";
-                    }
-                    else
-                    {
-                        line += "------ ";
-                    }
-                }
-                json.AppendLine(line.Trim() + "\",");
-            }
-            json.AppendLine("]");
+            //    foreach (var hex in rowOfHexes)
+            //    {
+            //        if (hex.isActive)
+            //        {
+            //            foreach (var t in hex.triangles)
+            //            {
+            //                line += palette.getColourPalette(t.color);    // TODO
+            //            }
+            //            if (hex.isFixed) line += "!";
+            //            line += " ";
+            //        }
+            //        else
+            //        {
+            //            line += "------ ";
+            //        }
+            //    }
+            //    json.AppendLine(line.Trim() + "\",");
+            //}
+            //json.AppendLine("]");
 
-            // var json = JsonConvert.SerializeObject(usedHexagons);
+            var json = JsonConvert.SerializeObject(usedHexagons, Formatting.Indented);
+            // Console.WriteLine(json);
 
             var result = $@"
     {{
-        name: 'My Puzzle 1',
-        difficulty: 'Very hard!',
-        date: '',
-        puzzle: {json.ToString()};
+        name: '{this.Name}',
+        difficulty: '{this.Difficulty}',
+        date: '{DateTime.Now}',
+        puzzle: {json};
     }}
 ";
 
-            Console.WriteLine(result);
+            // Console.WriteLine(result);
 
             var dlg = new SaveFileDialog();
             dlg.Filter = "JSON files|*.json";

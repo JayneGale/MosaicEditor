@@ -125,7 +125,7 @@ namespace Mosaic_editor
                 if (File.Exists(dlg.FileName))
                 {
                     // Load the image
-                    using (var image = Bitmap.FromFile(dlg.FileName))
+                    using (var image = Bitmap.FromFile(dlg.FileName) as Bitmap)
                     {
                         // Process this image
                         puzzle = PhotoInput.LoadImage(image);
@@ -145,6 +145,11 @@ namespace Mosaic_editor
                 puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
                 pictureBox1.Invalidate();
             }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

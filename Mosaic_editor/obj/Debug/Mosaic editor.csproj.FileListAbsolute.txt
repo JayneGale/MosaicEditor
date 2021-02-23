@@ -12,9 +12,7 @@ D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.pdb
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete
-<<<<<<< Updated upstream
 D:\Data\Code\Mosaic editor\Jayne\Mosaic_editor\obj\Debug\Mosaic_editor.frmResizePuzzle.resources
-=======
 =======
 D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Mosaic editor.exe.config
 D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Mosaic editor.exe
@@ -30,4 +28,3 @@ D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.pdb
 D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Newtonsoft.Json.dll
 D:\Code\Puzzley\MosaicEditor\Mosaic_editor\bin\Debug\Newtonsoft.Json.xml
 D:\Code\Puzzley\MosaicEditor\Mosaic_editor\obj\Debug\Mosaic editor.csproj.CopyComplete
->>>>>>> Stashed changes

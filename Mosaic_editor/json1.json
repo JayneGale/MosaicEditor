@@ -1,0 +1,95 @@
+[
+  {
+    "triangles": [
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Red",
+        "isActive": true
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      }
+    ],
+    "row": 1,
+    "col": 1,
+    "isActive": true
+  },
+  {
+    "triangles": [
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Red",
+        "isActive": true
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      }
+    ],
+    "row": 2,
+    "col": 2,
+    "isActive": true
+  },
+  {
+    "triangles": [
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      },
+      {
+        "color": "Red",
+        "isActive": true
+      },
+      {
+        "color": "Silver",
+        "isActive": false
+      }
+    ],
+    "row": 3,
+    "col": 1,
+    "isActive": true
+  }
+]
