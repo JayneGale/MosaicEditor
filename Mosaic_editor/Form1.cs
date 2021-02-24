@@ -141,7 +141,6 @@ namespace Mosaic_editor
             var dlg = new frmResizePuzzle();
             dlg.GridSize = puzzle.GridSpacing;
             if (dlg.ShowDialog() == DialogResult.OK) 
-            //if (MessageBox.Show("This will clear the current puzzle.  Resize the puzzle to fit the screen?", "Resize Puzzle", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
                 pictureBox1.Invalidate();
@@ -150,7 +149,12 @@ namespace Mosaic_editor
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            MessageBox.Show("Save as is not implemented", "Save As", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
 
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            clearToolStripMenuItem_Click(sender, e);
         }
     }
 }
