@@ -12,7 +12,13 @@ namespace Mosaic_editor.Classes
 {
     class Puzzle
     {
+        public DateTime DateCreated { get; private set; }
+        public DateTime DateUpdated { get; private set; }
+
         public List<Hexagon> HexagonList;
+
+        public int width { get; private set; }
+        public int height { get; private set; }
 
         public int GridSpacing = 100;
 
@@ -33,6 +39,8 @@ namespace Mosaic_editor.Classes
         /// <param name="height"></param>
         public Puzzle(int width, int height, int gridSpacing)
         {
+            this.width = width;
+            this.height = height;
             this.GridSpacing = gridSpacing;
             CreateHexArray(width, height);
         }
@@ -127,14 +135,49 @@ namespace Mosaic_editor.Classes
         /// <summary>
         /// TODO
         /// </summary>
-        internal void load(ColourPalette palette)
+        internal static Puzzle load(ColourPalette palette)
         {
             var dlg = new OpenFileDialog();
             dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             dlg.Filter = "JSON files|*.json";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                if (File.Exists(dlg.FileName))
+                {
+                    var text = File.ReadAllText(dlg.FileName);
+                    try
+                    {
+                        var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
+                        result.RepairLinks();
+                        Console.WriteLine($"Loaded puzzle from {dlg.FileName}");
+                        return result;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex.Message);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"Cannot find file {dlg.FileName}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                }
+            }
+            // a change
 
+            // Failed!  Return a new empty puzzle
+            var newPuzzle = new Puzzle(10, 10, 100);
+            newPuzzle.Name = "Puzzle failed to load";
+            return newPuzzle;
+        }
+
+        private void RepairLinks()
+        {
+            foreach(var hex in HexagonList)
+            {
+                foreach(var t in hex.triangles)
+                {
+                    t.parent = hex;
+                }
             }
         }
 
@@ -198,17 +241,25 @@ namespace Mosaic_editor.Classes
             //}
             //json.AppendLine("]");
 
-            var json = JsonConvert.SerializeObject(usedHexagons, Formatting.Indented);
+            // var puzzle = new Puzzle(this.width, this.height, this.GridSpacing);
+            var puzzle =(Puzzle)this.MemberwiseClone();
+            // puzzle.Name = this.Name;
+            // puzzle.Difficulty = this.Difficulty;
+            puzzle.DateCreated= DateTime.Now;
+            puzzle.DateUpdated = DateTime.Now;
+            puzzle.HexagonList = usedHexagons.ToList();
+            var json = JsonConvert.SerializeObject(puzzle, Formatting.Indented);
+
             // Console.WriteLine(json);
 
-            var result = $@"
-    {{
-        name: '{this.Name}',
-        difficulty: '{this.Difficulty}',
-        date: '{DateTime.Now}',
-        puzzle: {json};
-    }}
-";
+//            var result = $@"
+//    {{
+//        name: '{this.Name}',
+//        difficulty: '{this.Difficulty}',
+//        date: '{DateTime.Now}',
+//        puzzle: {json}
+//    }}
+//";
 
             // Console.WriteLine(result);
 
@@ -219,7 +270,7 @@ namespace Mosaic_editor.Classes
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 Console.WriteLine($"Saving to {dlg.FileName}");
-                File.WriteAllText(dlg.FileName, result);
+                File.WriteAllText(dlg.FileName, json);
             }
 
         }

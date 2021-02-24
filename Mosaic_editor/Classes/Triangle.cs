@@ -12,12 +12,12 @@ namespace Mosaic_editor.Classes
     {
         public Color color;
         internal Hexagon parent;
-        internal bool upsideDown;
+        public bool upsideDown;
 
         public bool isActive;
 
         // The bounding box of this triangle
-        internal Rectangle bounds;
+        public Rectangle bounds;
 
         // The path which defines the outline of this triangle
         private GraphicsPath outline;
@@ -58,12 +58,15 @@ namespace Mosaic_editor.Classes
         /// <param name="g"></param>
         internal void draw(Graphics g, bool isFixed = false)
         {
+            Console.WriteLine($"Triangle.draw()");
+
             calculateOutline();
             // Draw and fill this triangle
 
             var pen = new Pen(Color.Black, 1);
             if (parent.isActive)
             {
+                dumpOutline();
                 Brush brush = new SolidBrush(color);
                 if (isFixed)
                 {
@@ -76,6 +79,15 @@ namespace Mosaic_editor.Classes
                 pen.Color = Color.LightGray;
             }
             g.DrawPath(pen, outline);
+        }
+
+        private void dumpOutline()
+        {
+            foreach(var p in outline.PathPoints)
+            {
+                Console.Write($"{p.X},{p.Y}; ");
+            }
+            Console.WriteLine();
         }
 
         internal bool contains(Point mouseXY)

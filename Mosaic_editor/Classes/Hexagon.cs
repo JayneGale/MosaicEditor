@@ -15,11 +15,11 @@ namespace Mosaic_editor.Classes
         public int col;
         public bool isActive;
 
-        internal bool isFixed = false;
+        public bool isFixed = false;
         internal bool isSelected = false;
 
         // The box which defines the bounds of this hexagon
-        internal Rectangle bounds;
+        public Rectangle bounds;
 
         // The path which defines the outline of this hexagon
         private GraphicsPath outline;
@@ -119,6 +119,8 @@ namespace Mosaic_editor.Classes
         /// <param name="g"></param>
         internal void draw(Graphics g)
         {
+            Console.WriteLine($"Hexagon.draw() {this.col},{this.row}");
+
             calculateOutline();
 
             var pen = new Pen(Color.LightGray, 1);

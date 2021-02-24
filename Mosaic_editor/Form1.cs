@@ -111,7 +111,8 @@ namespace Mosaic_editor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            puzzle.load(palette);
+            puzzle = Puzzle.load(palette);
+            pictureBox1.Invalidate();
         }
 
         private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
