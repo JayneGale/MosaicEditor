@@ -242,6 +242,7 @@ namespace Mosaic_editor.Classes
 
         /// <summary>
         /// Recalculate the hexagon position, given row, column, and gridSpacing
+        /// Including all its contained triangles
         /// </summary>
         /// <param name="gridSpacing"></param>
         internal void refreshPosition(int gridSpacing)
