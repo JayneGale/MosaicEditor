@@ -112,6 +112,7 @@ namespace Mosaic_editor
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             puzzle = Puzzle.load(palette);
+            puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Invalidate();
         }
 
@@ -142,7 +143,8 @@ namespace Mosaic_editor
             dlg.GridSize = puzzle.GridSpacing;
             if (dlg.ShowDialog() == DialogResult.OK) 
             {
-                puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
+                // puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
+                puzzle.recentre(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
                 pictureBox1.Invalidate();
             }
         }
@@ -155,6 +157,18 @@ namespace Mosaic_editor
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             clearToolStripMenuItem_Click(sender, e);
+        }
+
+        private void pictureBox1_Resize(object sender, EventArgs e)
+        {
+            recenterPuzzle();
+        }
+
+        private void recenterPuzzle()
+        {
+            if (puzzle == null) return;
+            puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
+            pictureBox1.Invalidate();
         }
     }
 }

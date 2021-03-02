@@ -19,8 +19,12 @@ namespace Mosaic_editor.Classes
 
         public int width { get; private set; }
         public int height { get; private set; }
+        public string filename { get; private set; }
 
         public int GridSpacing = 100;
+
+        public int cols { get; private set; }
+        public int rows { get; private set; }
 
         public string Name = "A First Puzzle";
         public string Difficulty = "Hard";
@@ -30,56 +34,88 @@ namespace Mosaic_editor.Classes
         const int HEIGHT_LIMIT = 50;
 
         internal Hexagon selectedHexagon = null;
-        
+
         /// <summary>
         /// The constructor takes the dimensions of the picture box as parameters, and
         /// fills the picture box with hexagons.
         /// </summary>
-        /// <param name="width"></param>
-        /// <param name="height"></param>
+        /// <param name="width">in pixels</param>
+        /// <param name="height">in pixels</param>
+        /// <param name="gridSpacing">in pixels</param>
         public Puzzle(int width, int height, int gridSpacing)
         {
             this.width = width;
             this.height = height;
             this.GridSpacing = gridSpacing;
+
             CreateHexArray(width, height);
+            refreshPositions();
         }
 
+        /// <summary>
+        /// Creates a list of hexagons enough to fill the given area
+        /// </summary>
+        /// <param name="width"></param>
+        /// <param name="height"></param>
         private void CreateHexArray(int width, int height)
         {
             HexagonList = new List<Hexagon>();
 
+            // Work out how many rows and columns there are
+            this.cols = (int)Math.Floor(width / (this.GridSpacing * 1.5));
+            var triangleHeight = this.GridSpacing * Constants.COS30;
+            this.rows = (int)Math.Floor((height - triangleHeight) / triangleHeight);
+            Console.WriteLine($"this puzzle has {cols} columns and {rows} rows");
+
             // row and col are simple counters
+            int col0 = 1;
+            for (int row = 0; row < rows; row++)
+            {
+                /// x = x0 + GridSpacing;
+                for (int col = col0; col < cols; col += 2)
+                {
+                    var hex = new Hexagon(row, col); // , x, y, GridSpacing);
+                    // HexagonArray[x, y] = hex;
+                    HexagonList.Add(hex);
+                    //x += dx;
+                    //if (x + GridSpacing > width) break;
+                }
+                //x0 = (int)(GridSpacing * 1.5) - x0;   // this handles the alternating row offsets
+                //y += dy;
+                //if (y + GridSpacing > height) break;
+                col0 = 1 - col0;
+            }
+
             // x and y are the positions on screen in pixels of the (centres of) the hexagons
             // dx is the spacing between hex centres across the screen
             // dy is the spacing between hex centres down the screen
             // EVEN rows (0, 2, 4, ..) start from x = gridSpacing
             // ODD rows (1, 3, 5, ..) start from x = 1.5 times the gridSpacing
 
-            int dx = 3 * GridSpacing;
-            int dy = (int)(GridSpacing * Constants.COS30);
-            int x;
-            int x0 = 0; // the starting offset for each row
+            //int dx = 3 * GridSpacing;
+            //int dy = (int)(GridSpacing * Constants.COS30);
+            //int x;
+            //int x0 = (int)(GridSpacing * 1.5); // the starting offset for each row
 
-            int y = dy;
-            int col0 = 0;
-            for (int row = 0; row < HEIGHT_LIMIT; row++)
-            {
-                x = x0 + GridSpacing;
+            //int y = dy;
+            //int col0 = 1;
+            //for (int row = 0; row < HEIGHT_LIMIT; row++)
+            //{
+            //    x = x0 + GridSpacing;
 
-                for (int col = col0; col < WIDTH_LIMIT; col += 2)
-                {
-                    var hex = new Hexagon(row, col, x, y, GridSpacing);
-                    // HexagonArray[x, y] = hex;
-                    HexagonList.Add(hex);
-                    x += dx;
-                    if (x + GridSpacing > width) break;
-                }
-                x0 = (int)(GridSpacing * 1.5) - x0;   // this handles the alternating row offsets
-                y += dy;
-                if (y + GridSpacing > height) break;
-                col0 = 1 - col0;
-            }
+            //    for (int col = col0; col < WIDTH_LIMIT; col += 2)
+            //    {
+            //        var hex = new Hexagon(row, col, x, y, GridSpacing);
+            //        // HexagonArray[x, y] = hex;
+            //        HexagonList.Add(hex);
+            //        x += dx;
+            //        if (x + GridSpacing > width) break;
+            //    }
+            //    x0 = (int)(GridSpacing * 1.5) - x0;   // this handles the alternating row offsets
+            //    y += dy;
+            //    if (y + GridSpacing > height) break;
+            //    col0 = 1 - col0;
+            //}
         }
 
         /// <summary>
@@ -150,6 +186,7 @@ namespace Mosaic_editor.Classes
                         var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
                         result.RepairLinks();
                         Console.WriteLine($"Loaded puzzle from {dlg.FileName}");
+                        result.refreshPositions();
                         return result;
                     }
                     catch (Exception ex)
@@ -168,6 +205,35 @@ namespace Mosaic_editor.Classes
             var newPuzzle = new Puzzle(10, 10, 100);
             newPuzzle.Name = "Puzzle failed to load";
             return newPuzzle;
+        }
+
+        internal void recentre(int width, int height, int gridSize = 0)
+        {
+            this.width = width;
+            this.height = height;
+            if (gridSize > 0) this.GridSpacing = gridSize;
+            var activeHexagons = HexagonList.Where(h => h.isActive);    // save a list of the active ones
+            CreateHexArray(width, height);
+            // re-apply the active ones into the new list
+            foreach(var hex in activeHexagons)
+            {
+                Console.WriteLine($"Active: {hex.col}, {hex.row}");
+                var match = HexagonList.FirstOrDefault(hex2 => hex2.col == hex.col && hex2.row == hex.row);
+                if (match != null)
+                {
+                    HexagonList.Add(hex);
+                    HexagonList.Remove(match);
+                }
+            }
+            refreshPositions();
+        }
+
+        private void refreshPositions()
+        {
+            foreach(var h in HexagonList)
+            {
+                h.refreshPosition(this.GridSpacing);
+            }
         }
 
         private void RepairLinks()
@@ -199,50 +265,8 @@ namespace Mosaic_editor.Classes
 
             var usedHexagons = HexagonList.Where(h => h.row >= rowMin && h.row <= rowMax && h.col >= colMin && h.col <= colMax);
 
-            /*
-                 [
-                    "ABABABA BDBDBDBD DEDEDED XXXXXX -------",
-                    "ABABABA BDBDBDBD DEDEDED! XXXXXX -------",
-                    "ABABABA -------- DEDEDED XXXXXX -------
-                 ]
-             */
-            //var json = new StringBuilder("[");
-            //for (int row = rowMin; row <= rowMax; row++)
-            //{
-            //    var rowOfHexes = usedHexagons.Where(h => h.row == row).OrderBy(h => h.col);
-            //    json.Append("\"");
-
-            //    var line = "";
-
-            //    var firstHex = rowOfHexes.FirstOrDefault();
-            //    if (firstHex != null)
-            //    {
-            //        var indented = (firstHex.col - colMin) > 0;
-            //        if (indented) line += "> ";
-            //    }
-
-            //    foreach (var hex in rowOfHexes)
-            //    {
-            //        if (hex.isActive)
-            //        {
-            //            foreach (var t in hex.triangles)
-            //            {
-            //                line += palette.getColourPalette(t.color);    // TODO
-            //            }
-            //            if (hex.isFixed) line += "!";
-            //            line += " ";
-            //        }
-            //        else
-            //        {
-            //            line += "------ ";
-            //        }
-            //    }
-            //    json.AppendLine(line.Trim() + "\",");
-            //}
-            //json.AppendLine("]");
-
-            // var puzzle = new Puzzle(this.width, this.height, this.GridSpacing);
             var puzzle =(Puzzle)this.MemberwiseClone();
+
             // puzzle.Name = this.Name;
             // puzzle.Difficulty = this.Difficulty;
             puzzle.DateCreated= DateTime.Now;
@@ -250,25 +274,13 @@ namespace Mosaic_editor.Classes
             puzzle.HexagonList = usedHexagons.ToList();
             var json = JsonConvert.SerializeObject(puzzle, Formatting.Indented);
 
-            // Console.WriteLine(json);
-
-//            var result = $@"
-//    {{
-//        name: '{this.Name}',
-//        difficulty: '{this.Difficulty}',
-//        date: '{DateTime.Now}',
-//        puzzle: {json}
-//    }}
-//";
-
-            // Console.WriteLine(result);
-
             var dlg = new SaveFileDialog();
             dlg.Filter = "JSON files|*.json";
             dlg.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
             dlg.FileName = "mosaic puzzles.json";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
+                puzzle.filename = dlg.FileName;
                 Console.WriteLine($"Saving to {dlg.FileName}");
                 File.WriteAllText(dlg.FileName, json);
             }

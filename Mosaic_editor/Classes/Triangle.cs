@@ -15,12 +15,15 @@ namespace Mosaic_editor.Classes
         public bool upsideDown;
 
         public bool isActive;
+        internal bool verbose = false;
 
         // The bounding box of this triangle
         public Rectangle bounds;
 
         // The path which defines the outline of this triangle
         private GraphicsPath outline;
+
+        public int index { get; internal set; }
 
         /// The constructor for Triangle
         internal Triangle()
@@ -32,9 +35,9 @@ namespace Mosaic_editor.Classes
         /// Calculate the outline of this triangle, given its bounding box.
         /// The outline is a closed polygon defined by three points.
         /// This function runs once, the first time the triangle is drawn.
-        internal void calculateOutline()
+        internal void calculateOutline(bool forced = false)
         {
-            if (outline != null) return;    // already done; don't repeat
+            if (!forced && outline != null) return;    // already done; don't repeat
             Point[] points = new Point[3];
             if (upsideDown)
             {
@@ -58,7 +61,7 @@ namespace Mosaic_editor.Classes
         /// <param name="g"></param>
         internal void draw(Graphics g, bool isFixed = false)
         {
-            Console.WriteLine($"Triangle.draw()");
+            // Console.WriteLine($"Triangle.draw()");
 
             calculateOutline();
             // Draw and fill this triangle
@@ -76,9 +79,15 @@ namespace Mosaic_editor.Classes
             }
             else
             {
-                pen.Color = Color.LightGray;
+                pen.Color = Color.FromArgb(230,230,230); // Color.LightGray;
             }
             g.DrawPath(pen, outline);
+
+            if (verbose)
+            {
+                var font = new Font("Arial", 10);
+                g.DrawString(index.ToString(), font, Brushes.Green, bounds.Left + (bounds.Width / 2) - 6, bounds.Top + (bounds.Height / 2) - 10);
+            }
         }
 
         private void dumpOutline()

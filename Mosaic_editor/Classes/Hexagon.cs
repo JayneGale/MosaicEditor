@@ -14,6 +14,7 @@ namespace Mosaic_editor.Classes
         public int row;
         public int col;
         public bool isActive;
+        internal bool verbose = false;
 
         public bool isFixed = false;
         internal bool isSelected = false;
@@ -24,21 +25,30 @@ namespace Mosaic_editor.Classes
         // The path which defines the outline of this hexagon
         private GraphicsPath outline;
 
-        public Hexagon(int row, int col, int x, int y, int gridSpacing)
+        /// <summary>
+        /// Construct a Hexagon at a specified row and col.
+        /// Actual screen position unknown at this point.
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="col"></param>
+        public Hexagon(int row, int col)
         {
+            this.row = row;
+            this.col = col;
+
             bool upsideDown = false;
 
             this.row = row;
             this.col = col;
 
             // These are the screen coordinates of the centre of the hexagon
-            int xCentre = x;
-            int yCentre = y;
+            //int xCentre = x;
+            //int yCentre = y;
 
-            int height = (int)(Constants.COS30 * gridSpacing);
-            var width = gridSpacing;
+            //int height = (int)(Constants.COS30 * gridSpacing);
+            //var width = gridSpacing;
 
-            bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
+            // bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
 
             triangles = new List<Triangle>();
 
@@ -47,35 +57,90 @@ namespace Mosaic_editor.Classes
                 var t = new Triangle()
                 {
                     parent = this,
+                    index = i,
                     upsideDown = upsideDown,
                 };
+                triangles.Add(t);
+                upsideDown = !upsideDown;
 
                 // Set bounds for each triangle: the bounding box's upper left corner
-                switch (i)
-                {
-                    case 0:
-                        t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
-                        break;
-                    case 1:
-                        t.bounds = new Rectangle(xCentre, yCentre, width, height);
-                        break;
-                    case 2:
-                        t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
-                        break;
-                    case 3:
-                        t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
-                        break;
-                    case 4:
-                        t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
-                        break;
-                    case 5:
-                        t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
-                        break;
-                }
-                upsideDown = !upsideDown;
-                triangles.Add(t);
+                //switch (i)
+                //{
+                //    case 0:
+                //        t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
+                //        break;
+                //    case 1:
+                //        t.bounds = new Rectangle(xCentre, yCentre, width, height);
+                //        break;
+                //    case 2:
+                //        t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
+                //        break;
+                //    case 3:
+                //        t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
+                //        break;
+                //    case 4:
+                //        t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
+                //        break;
+                //    case 5:
+                //        t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
+                //        break;
+                //}
             }
         }
+
+
+        //public Hexagon(int row, int col, int x, int y, int gridSpacing)
+        //{
+        //    bool upsideDown = false;
+
+        //    this.row = row;
+        //    this.col = col;
+
+        //    // These are the screen coordinates of the centre of the hexagon
+        //    int xCentre = x;
+        //    int yCentre = y;
+
+        //    int height = (int)(Constants.COS30 * gridSpacing);
+        //    var width = gridSpacing;
+
+        //    bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
+
+        //    triangles = new List<Triangle>();
+
+        //    for (int i = 0; i < 6; i++)
+        //    {
+        //        var t = new Triangle()
+        //        {
+        //            parent = this,
+        //            upsideDown = upsideDown,
+        //        };
+
+        //        // Set bounds for each triangle: the bounding box's upper left corner
+        //        switch (i)
+        //        {
+        //            case 0:
+        //                t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
+        //                break;
+        //            case 1:
+        //                t.bounds = new Rectangle(xCentre, yCentre, width, height);
+        //                break;
+        //            case 2:
+        //                t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
+        //                break;
+        //            case 3:
+        //                t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
+        //                break;
+        //            case 4:
+        //                t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
+        //                break;
+        //            case 5:
+        //                t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
+        //                break;
+        //        }
+        //        upsideDown = !upsideDown;
+        //        triangles.Add(t);
+        //    }
+        //}
 
         // refresh() checks and sets the "isActive" status of this Hexagon depending upon
         // the colours of its triangles.
@@ -87,9 +152,9 @@ namespace Mosaic_editor.Classes
         // Calculate the outline of this hexagon, given its bounding box.
         // The outline is a closed polygon defined by six points.
         // This function runs once, the first time the hexagon is drawn.
-        internal void calculateOutline()
+        internal void calculateOutline(bool forced = false)
         {
-            if (outline != null) return;    // already done; don't repeat
+            if (!forced && outline != null) return;    // already done; don't repeat
 
             outline = new GraphicsPath();
 
@@ -119,7 +184,7 @@ namespace Mosaic_editor.Classes
         /// <param name="g"></param>
         internal void draw(Graphics g)
         {
-            Console.WriteLine($"Hexagon.draw() {this.col},{this.row}");
+            // Console.WriteLine($"Hexagon.draw() {this.col},{this.row}");
 
             calculateOutline();
 
@@ -129,7 +194,7 @@ namespace Mosaic_editor.Classes
             {
                 // Draw my six triangles first
                 triangles.ForEach(t => t.draw(g, isFixed));
-                pen.Color = Color.DarkGray;
+                pen.Color = Color.FromArgb(30, 30, 30); // Color.DarkGray;
                 pen.Width = 3;  // pen for hex outline
             }
             else
@@ -145,6 +210,14 @@ namespace Mosaic_editor.Classes
 
             // Draw hexagon outline
             g.DrawPath(pen, outline);
+
+            if (verbose)
+            {
+                var font = new Font("Arial", 15);
+                var x = bounds.Left + bounds.Width / 2;
+                var y = bounds.Top + bounds.Height / 2;
+                g.DrawString($"{col},{row}", font, Brushes.DarkBlue, x, y);
+            }
         }
 
         internal Triangle checkForClick(Point location)
@@ -164,6 +237,33 @@ namespace Mosaic_editor.Classes
 
             Console.WriteLine("(...no triangle here was clicked)");
             return null;
+        }
+
+
+        /// <summary>
+        /// Recalculate the hexagon position, given row, column, and gridSpacing
+        /// </summary>
+        /// <param name="gridSpacing"></param>
+        internal void refreshPosition(int gridSpacing)
+        {
+            var height = (int)(gridSpacing * Constants.COS30);  // the height of a triangle
+            var width = gridSpacing;    // the width of a triangle
+
+            var margin = 20;    // px
+            var x = (int)(margin + width + (col * width * 1.5));
+            var y = (int)(margin + height + (row * height));
+
+            bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
+
+            triangles[0].bounds = new Rectangle(x, y - height, width, height);
+            triangles[1].bounds = new Rectangle(x, y, width, height);
+            triangles[2].bounds = new Rectangle(x - (width / 2), y, width, height);
+            triangles[3].bounds = new Rectangle(x - width, y, width, height);
+            triangles[4].bounds = new Rectangle(x - width, y - height, width, height);
+            triangles[5].bounds = new Rectangle(x - (width / 2), y - height, width, height);
+
+            this.calculateOutline(true);
+            foreach (var t in triangles) t.calculateOutline(true);
         }
     }
 }
