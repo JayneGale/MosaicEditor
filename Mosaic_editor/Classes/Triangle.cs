@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -10,26 +11,28 @@ namespace Mosaic_editor.Classes
 {
     class Triangle
     {
-        public Color color;
+        // public Color color;
+        public int colorNo;
         internal Hexagon parent;
-        public bool upsideDown;
+        internal bool upsideDown;
 
         public bool isActive;
         internal bool verbose = false;
 
         // The bounding box of this triangle
-        public Rectangle bounds;
+        internal Rectangle bounds;
 
         // The path which defines the outline of this triangle
         private GraphicsPath outline;
 
-        public int index { get; internal set; }
+        internal int index;
 
         /// The constructor for Triangle
         internal Triangle()
         {
             isActive = false;
-            color = Constants.BLANK_COLOR;  // the default
+            // color = Constants.BLANK_COLOR;  // the default
+            colorNo = 0;  // the default
         }
 
         /// Calculate the outline of this triangle, given its bounding box.
@@ -66,10 +69,11 @@ namespace Mosaic_editor.Classes
             calculateOutline();
             // Draw and fill this triangle
 
+            Color color = parent.getColor(colorNo);
             var pen = new Pen(Color.Black, 1);
             if (parent.isActive)
             {
-                dumpOutline();
+                // dumpOutline();
                 Brush brush = new SolidBrush(color);
                 if (isFixed)
                 {
@@ -149,7 +153,7 @@ namespace Mosaic_editor.Classes
         internal void clear()
         {
             isActive = false;
-            color = Constants.BLANK_COLOR;
+            colorNo = 0; //  Constants.BLANK_COLOR;
         }
 
     }

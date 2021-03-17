@@ -10,20 +10,43 @@ namespace Mosaic_editor.Classes
 {
     class Hexagon
     {
-        public List<Triangle> triangles;
         public int row;
         public int col;
         public bool isActive;
-        internal bool verbose = false;
+        internal bool verbose = true;
 
         public bool isFixed = false;
+        public int matchOn = 3;             // number of adjacent triangles which must match
         internal bool isSelected = false;
 
         // The box which defines the bounds of this hexagon
-        public Rectangle bounds;
+        internal Rectangle bounds;
 
         // The path which defines the outline of this hexagon
         private GraphicsPath outline;
+
+        internal Puzzle parent;
+
+        internal List<Triangle> triangles;
+
+        public int[] colors {
+            get
+            {
+                var result = new int[6];
+                foreach(int i in Enumerable.Range(0,result.Length))
+                {
+                    result[i] = triangles[i].colorNo;
+                }
+                return result;
+            }
+            set
+            {
+                foreach (int i in Enumerable.Range(0, value.Length))
+                {
+                    triangles[i].colorNo = value[i];
+                }
+            }
+        }
 
         /// <summary>
         /// Construct a Hexagon at a specified row and col.
@@ -86,6 +109,11 @@ namespace Mosaic_editor.Classes
                 //        break;
                 //}
             }
+        }
+
+        internal Color getColor(int colorNo)
+        {
+            return parent.getColor(colorNo);
         }
 
 
@@ -194,6 +222,7 @@ namespace Mosaic_editor.Classes
             {
                 // Draw my six triangles first
                 triangles.ForEach(t => t.draw(g, isFixed));
+                // Set up the pen for the hex outline
                 pen.Color = Color.FromArgb(30, 30, 30); // Color.DarkGray;
                 pen.Width = 3;  // pen for hex outline
             }
@@ -216,7 +245,9 @@ namespace Mosaic_editor.Classes
                 var font = new Font("Arial", 15);
                 var x = bounds.Left + bounds.Width / 2;
                 var y = bounds.Top + bounds.Height / 2;
-                g.DrawString($"{col},{row}", font, Brushes.DarkBlue, x, y);
+                var text = $"{col},{row}";
+                var box = g.MeasureString(text, font);
+                g.DrawString(text, font, Brushes.DarkBlue, x - box.Width/2, y - box.Height/2);
             }
         }
 
@@ -264,7 +295,14 @@ namespace Mosaic_editor.Classes
             triangles[5].bounds = new Rectangle(x - (width / 2), y - height, width, height);
 
             this.calculateOutline(true);
-            foreach (var t in triangles) t.calculateOutline(true);
+
+            int i = 0;
+            foreach (var t in triangles)
+            {
+                t.index = i++;
+                t.upsideDown = (i & 1) == 0;    // odd-numbered ones are upside down
+                t.calculateOutline(true);
+            }
         }
     }
 }

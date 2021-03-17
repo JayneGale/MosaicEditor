@@ -17,19 +17,26 @@ namespace Mosaic_editor
     {
         Puzzle puzzle;
         ColourPalette palette;
+        ColourPicker picker;
 
         public Form1()
         {
             InitializeComponent();
-            palette = new ColourPalette(toolStrip1);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            palette = new ColourPalette(10);
+            picker = new ColourPicker(toolStrip1, palette);
+            picker.onPaletteChanged += Picker_onPaletteChanged;
             // Note: puzzle does not resize / redraw if the user resizes the window.
-            puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, Constants.DEFAULT_GRID_SPACING);
+            puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, Constants.DEFAULT_GRID_SPACING, palette);
         }
 
+        private void Picker_onPaletteChanged(EventArgs e)
+        {
+            pictureBox1.Invalidate();
+        }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
         {
@@ -48,16 +55,16 @@ namespace Mosaic_editor
                     }
                     else
                     {
-                        Console.WriteLine($"Changing color to {palette.currentColour}");
+                        Console.WriteLine($"Changing to color {picker.currentColourIndex}");
                         // Toggle colour
-                        if (selectedTriangle.color == palette.currentColour)
+                        if (selectedTriangle.colorNo == picker.currentColourIndex)
                         {
-                            selectedTriangle.color = Constants.BLANK_COLOR;
+                            selectedTriangle.colorNo = 0;  // Constants.BLANK_COLOR;
                         }
                         else
                         {
                             // selectedTriangle.isActive = true;
-                            selectedTriangle.color = palette.currentColour;
+                            selectedTriangle.colorNo = picker.currentColourIndex;
                         }
                         selectedTriangle.isActive = true;
                     }
@@ -106,12 +113,13 @@ namespace Mosaic_editor
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            puzzle.save(palette);
+            puzzle.save();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            puzzle = Puzzle.load(palette);
+            puzzle = Puzzle.load(); //  palette);
+            picker.reloadPalette();
             puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Invalidate();
         }
@@ -149,10 +157,10 @@ namespace Mosaic_editor
             }
         }
 
-        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            MessageBox.Show("Save as is not implemented", "Save As", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+        //private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+        //{
+        //    MessageBox.Show("Save as is not implemented", "Save As", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //}
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -169,6 +177,34 @@ namespace Mosaic_editor
             if (puzzle == null) return;
             puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
             pictureBox1.Invalidate();
+        }
+
+        private void Form1_KeyDown(object sender, KeyEventArgs e)
+        {
+            // This handles keyboard shortcuts
+            if (e.Control)
+            {
+               switch(e.KeyCode)
+                {
+                    case Keys.O:
+                        openToolStripMenuItem_Click(this, e);
+                        break;
+                    case Keys.S:
+                        saveToolStripMenuItem_Click(this, e);
+                        break;
+                    case Keys.N:
+                        newToolStripMenuItem_Click(this, e);
+                        break;
+                    case Keys.X:
+                        exitToolStripMenuItem_Click(this, e);
+                        break;
+                }
+            }
+        }
+
+        private void exitToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

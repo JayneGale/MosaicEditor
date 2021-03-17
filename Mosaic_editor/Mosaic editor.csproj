@@ -49,10 +49,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Classes\Range2D.cs" />
+    <Compile Include="Classes\ColourPicker.cs" />
     <Compile Include="Classes\ColourPalette.cs" />
     <Compile Include="Classes\Constants.cs" />
     <Compile Include="Classes\Hexagon.cs" />
     <Compile Include="Classes\Puzzle.cs" />
+    <Compile Include="Classes\PuzzleMerger.cs" />
     <Compile Include="Classes\Triangle.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
