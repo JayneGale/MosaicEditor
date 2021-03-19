@@ -83,7 +83,8 @@ namespace Mosaic_editor.Classes
             }
             else
             {
-                pen.Color = Color.FromArgb(230,230,230); // Color.LightGray;
+                // pen.Color = Color.FromArgb(230,230,230); // Color.LightGray;
+                pen.Color = Color.FromArgb(190, 190, 190);
             }
             g.DrawPath(pen, outline);
 

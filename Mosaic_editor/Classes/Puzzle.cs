@@ -17,11 +17,11 @@ namespace Mosaic_editor.Classes
 
         public List<Hexagon> HexagonList;
 
-        public int width { get; private set; }
-        public int height { get; private set; }
+        public int windowWidth { get; private set; }
+        public int windowHeight { get; private set; }
         public string filename { get; private set; }
 
-        public int GridSpacing = 100;
+        public int gridSpacing = 100;
         private ColourPalette palette;
 
         public int cols { get; private set; }
@@ -48,15 +48,24 @@ namespace Mosaic_editor.Classes
         /// <param name="width">in pixels</param>
         /// <param name="height">in pixels</param>
         /// <param name="gridSpacing">in pixels</param>
-        public Puzzle(int width, int height, int gridSpacing, ColourPalette palette)
+        // public Puzzle(PictureBox pictureBox, int gridSpacing, ColourPalette palette)
+        public Puzzle(int gridSpacing, ColourPalette palette)
         {
-            this.width = width;
-            this.height = height;
-            this.GridSpacing = gridSpacing;
+            this.gridSpacing = gridSpacing;
             this.palette = palette;
+            this.HexagonList = new List<Hexagon>();
+            //this.windowWidth = width;
+            //this.windowHeight = height;
+            //CreateHexArray(); //  width, height);
+            //resizeToFit(pictureBox);
+            //refreshPositions();
+        }
 
-            CreateHexArray(width, height);
-            refreshPositions();
+        internal void resizeToFit(PictureBox pictureBox)
+        {
+            this.windowWidth = pictureBox.Width;
+            this.windowHeight = pictureBox.Height;
+            this.recentre();
         }
 
         /// <summary>
@@ -64,16 +73,16 @@ namespace Mosaic_editor.Classes
         /// </summary>
         /// <param name="windowWidth"></param>
         /// <param name="windowHeight"></param>
-        private void CreateHexArray(int windowWidth, int windowHeight)
+        private void CreateHexArray() // int windowWidth, int windowHeight)
         {
             HexagonList = new List<Hexagon>();
 
             // Work out how many rows and columns fit into this window
             const int MARGINS = 20;
-            var unitsAcross = (windowWidth - MARGINS) / this.GridSpacing;
+            var unitsAcross = (windowWidth - MARGINS) / this.gridSpacing;
             this.cols = (int)Math.Floor((unitsAcross - 0.5) / 1.5);
 
-            var triangleHeight = this.GridSpacing * Constants.COS30;
+            var triangleHeight = this.gridSpacing * Constants.COS30;
             var unitsDown = (windowHeight - MARGINS) / triangleHeight;
             this.rows = (int)Math.Floor(unitsDown - 1);
             Console.WriteLine($"this puzzle has {cols} columns and {rows} rows");
@@ -168,7 +177,7 @@ namespace Mosaic_editor.Classes
                     {
                         var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
                         result.RepairLinks();
-                        result.refreshPositions();
+                        // result.refreshPositions();
                         result.recreatePalette();
                         Console.WriteLine($"Loaded puzzle from {dlg.FileName}");
                         return result;
@@ -186,9 +195,10 @@ namespace Mosaic_editor.Classes
             // a change
 
             // Failed!  Return a new empty puzzle
-            var newPuzzle = new Puzzle(10, 10, 100, new ColourPalette(6));
-            newPuzzle.name = "Puzzle failed to load";
-            return newPuzzle;
+            //var newPuzzle = new Puzzle(10, 10, 100, new ColourPalette(6));
+            //newPuzzle.name = "Puzzle failed to load";
+            //return newPuzzle;
+            return null;
         }
 
         /// <summary>
@@ -233,83 +243,46 @@ namespace Mosaic_editor.Classes
             }
         }
 
-        internal void translate(int x, int y)
+        /// <summary>
+        /// Move the active puzzle pieces within the window.
+        /// Used for (a) re-centering and (b) normalising to top left corner
+        /// </summary>
+        /// <param name="dx"></param>
+        /// <param name="dy"></param>
+        internal void translate(int dx, int dy)
         {
             var activeHexagons = HexagonList.Where(h => h.isActive);    // get a list of the active ones
-            foreach(var h in activeHexagons)
+
+            if (activeHexagons.Count() > 0)
             {
-                h.col += x;
-                h.row += y;
-            }
-            refreshPositions();
-        }
+                var leftMost = activeHexagons.Min(h => h.col);
+                var topMost = activeHexagons.Min(h => h.row);
 
-        /// <summary>
-        /// Recentres the puzzle in the existing window
-        /// </summary>
-        /// <param name="width">Window width in pixels</param>
-        /// <param name="height">Window height in pixels</param>
-        /// <param name="gridSize">Triangle width in pixels</param>
-        internal void recentre(int width, int height, int gridSize = 0)
-        {
-            this.width = width;
-            this.height = height;
-            if (gridSize > 0) this.GridSpacing = gridSize;  // ..otherwise it remains unchanged from its previous value
-
-            var activeHexagons = HexagonList.Where(h => h.isActive);    // save a list of the active ones
-            var bounds = getActiveRange();   // the bounds of the active puzzle
-            Console.WriteLine($"current puzzle bounds: {bounds.x1},{bounds.y1} - {bounds.x2},{bounds.y2}");
-
-            // Reinitialise the HexagonList with new hexagons
-            CreateHexArray(width, height);
-            var window = getWindowRange(); // the size of the window
-            window.Dump("current window bounds");
-            /// Console.WriteLine($"(current window bounds: {window.Left},{window.Top} - {window.Right},{window.Bottom})");
-
-            // Offset the puzzle to put it in the centre of the screen.
-            int xOffset = (int)((window.width - bounds.width) / 2);     // round to nearest int
-            int yOffset = (int)((window.height - bounds.height) / 2);
-            Console.WriteLine($"..recentre() puts the window centre at {xOffset},{yOffset}");
-            // Adjust to the nearest valid hex position
-            if ((yOffset & 1) == 1)
-            {
-                // Its in an odd row, so must be in an even column
-                if ((xOffset & 1) == 1)
+                // Validate dx and dy.
+                // Not all x,y coords are valid, because x and y must be of opposite parity.
+                // In other words if x is even y must be odd and vice versa.
+                // Therefore => to preserve this when translating dx, dy must be of the SAME parity.
+                if ((dx & 1) != (dy & 1))
                 {
-                    xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
+                    if (leftMost > 0)
+                        dx--;
+                    else
+                        dx++;   // this should fix it
+                }
+
+                // Now move the active hexagons by dx, dy
+                foreach (var h in activeHexagons)
+                {
+                    h.col += dx;
+                    h.row += dy;
                 }
             }
-            else
-            {
-                // Its in an even row, so has to be in an odd column
-                if ((xOffset & 1) == 0)
-                {
-                    xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
-                }
-            }
-            Console.WriteLine($"..recentre() puts the corrected window centre at {xOffset},{yOffset}");
 
-            xOffset -= bounds.x1;
-            yOffset -= bounds.y1;
-            // NOTE: Not all offsets are valid!  Row 0 only has columns 1, 3, 5, ... and row 1 has columns 0, 2, 4, ... etc.
-            // Valid offsets include:
-            //      1,-1 1,+1 3,-1 3+1 etc.
-            //      2,0 4,0 6,0 etc..
-            // i.e. if xOffset is odd, yOffset must also be odd.
-            //      if xOffset is even, yOffset must also be even.
+            // Regenerate the blank grid and re-insert the translated active hexagons
+            CreateHexArray(); //  width, height);
 
-            if ((xOffset & 1) != (yOffset & 1)) {
-                // One is odd and one is even.  Fix!
-                yOffset = (yOffset > 0) ? yOffset - 1 : yOffset + 1;
-            }
-            Console.WriteLine($"recentre will offset this puzzle by {xOffset},{yOffset}");
-
-            // re-apply the active ones into the new list
             foreach (var hex in activeHexagons)
             {
-                hex.col += xOffset;
-                hex.row += yOffset;
-                Console.WriteLine($"Hex moved to: {hex.col}, {hex.row}");
                 var match = HexagonList.FirstOrDefault(hex2 => hex2.col == hex.col && hex2.row == hex.row);
                 if (match != null)
                 {
@@ -321,14 +294,112 @@ namespace Mosaic_editor.Classes
                     Console.WriteLine($"..found no place for tile[{hex.col},{hex.row}]!");
                 }
             }
+
+            // 
             refreshPositions();
+        }
+
+        /// <summary>
+        /// Recentres the puzzle in the existing window
+        /// </summary>
+        /// <param name="width">Window width in pixels</param>
+        /// <param name="height">Window height in pixels</param>
+        /// <param name="gridSize">Triangle width in pixels</param>
+        internal void recentre() // int width, int height, int gridSize = 0)
+        {
+            // this.windowWidth = width;
+            // this.windowHeight = height;
+            // if (gridSize > 0) this.gridSpacing = gridSize;  // ..otherwise it remains unchanged from its previous value
+
+            var dx = 0;
+            var dy = 0;
+
+            var activeHexagons = HexagonList.Where(h => h.isActive);    // save a list of the active ones
+            if (activeHexagons.Count() > 0)
+            {
+                var currentLeft = activeHexagons.Min(h => h.col);
+                var currentTop = activeHexagons.Min(h => h.row);
+
+                var bounds = getActiveRange();   // the bounds of the active puzzle
+                Console.WriteLine($"current puzzle bounds: {bounds.x1},{bounds.y1} - {bounds.x2},{bounds.y2}");
+
+                // Reinitialise the HexagonList with new hexagons
+                CreateHexArray(); //  width, height);
+                var window = getWindowRange(); // the size of the window
+                window.Dump("current window bounds");
+                /// Console.WriteLine($"(current window bounds: {window.Left},{window.Top} - {window.Right},{window.Bottom})");
+
+                // Offset the puzzle to put it in the centre of the screen.
+                int newLeft = (int)((window.width - bounds.width) / 2);     // round to nearest int
+                int newTop = (int)((window.height - bounds.height) / 2);
+                Console.WriteLine($"..recentre() will move the pieces to {newLeft},{newTop}");
+
+                dx = newLeft - currentLeft;
+                dy = newTop - currentTop;
+            }
+
+            // transate also regenerates the hex grid
+            translate(dx, dy);
+
+            //// Adjust to the nearest valid hex position
+            //if ((yOffset & 1) == 1)
+            //{
+            //    // Its in an odd row, so must be in an even column
+            //    if ((xOffset & 1) == 1)
+            //    {
+            //        xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
+            //    }
+            //}
+            //else
+            //{
+            //    // Its in an even row, so has to be in an odd column
+            //    if ((xOffset & 1) == 0)
+            //    {
+            //        xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
+            //    }
+            //}
+            //Console.WriteLine($"..recentre() puts the corrected window centre at {xOffset},{yOffset}");
+
+            //xOffset -= bounds.x1;
+            //yOffset -= bounds.y1;
+            //// NOTE: Not all offsets are valid!  Row 0 only has columns 1, 3, 5, ... and row 1 has columns 0, 2, 4, ... etc.
+            //// Valid offsets include:
+            ////      1,-1 1,+1 3,-1 3+1 etc.
+            ////      2,0 4,0 6,0 etc..
+            //// i.e. if xOffset is odd, yOffset must also be odd.
+            ////      if xOffset is even, yOffset must also be even.
+
+            //if ((xOffset & 1) != (yOffset & 1)) {
+            //    // One is odd and one is even.  Fix!
+            //    yOffset = (yOffset > 0) ? yOffset - 1 : yOffset + 1;
+            //}
+            //Console.WriteLine($"recentre will offset this puzzle by {xOffset},{yOffset}");
+
+            //// re-apply the active ones into the new list
+            //foreach (var hex in activeHexagons)
+            //{
+            //    hex.col += xOffset;
+            //    hex.row += yOffset;
+            //    Console.WriteLine($"Hex moved to: {hex.col}, {hex.row}");
+            //    var match = HexagonList.FirstOrDefault(hex2 => hex2.col == hex.col && hex2.row == hex.row);
+            //    if (match != null)
+            //    {
+            //        HexagonList.Add(hex);
+            //        HexagonList.Remove(match);
+            //    }
+            //    else
+            //    {
+            //        Console.WriteLine($"..found no place for tile[{hex.col},{hex.row}]!");
+            //    }
+            //}
+            //refreshPositions();
         }
 
         private void refreshPositions()
         {
             foreach(var h in HexagonList)
             {
-                h.refreshPosition(this.GridSpacing);
+                h.refreshPosition(this.gridSpacing);
             }
         }
 

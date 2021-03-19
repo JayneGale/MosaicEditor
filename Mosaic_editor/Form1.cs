@@ -19,6 +19,10 @@ namespace Mosaic_editor
         ColourPalette palette;
         ColourPicker picker;
 
+        const int MIN_GRID_SPACING = 10;
+        const int MAX_GRID_SPACING = 500;
+        const int DELTA_GRID_SPACING = 10;
+
         public Form1()
         {
             InitializeComponent();
@@ -26,11 +30,14 @@ namespace Mosaic_editor
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            this.MouseWheel += Form1_MouseWheel;
             palette = new ColourPalette(10);
             picker = new ColourPicker(toolStrip1, palette);
             picker.onPaletteChanged += Picker_onPaletteChanged;
             // Note: puzzle does not resize / redraw if the user resizes the window.
-            puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, Constants.DEFAULT_GRID_SPACING, palette);
+            puzzle = new Puzzle(Constants.DEFAULT_GRID_SPACING, palette);
+            puzzle.resizeToFit(pictureBox1);
+            pictureBox1.Invalidate();
         }
 
         private void Picker_onPaletteChanged(EventArgs e)
@@ -118,10 +125,14 @@ namespace Mosaic_editor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            puzzle = Puzzle.load(); //  palette);
-            picker.reloadPalette();
-            puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
-            pictureBox1.Invalidate();
+            var newPuzzle = Puzzle.load(); //  palette);
+            if (newPuzzle != null)
+            {
+                puzzle = newPuzzle;
+                picker.reloadPalette();
+                puzzle.resizeToFit(pictureBox1); //  pictureBox1.Width, pictureBox1.Height);
+                pictureBox1.Invalidate();
+            }
         }
 
         private void loadImageToolStripMenuItem_Click(object sender, EventArgs e)
@@ -148,11 +159,13 @@ namespace Mosaic_editor
         private void resizePuzzleToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var dlg = new frmResizePuzzle();
-            dlg.GridSize = puzzle.GridSpacing;
+            dlg.GridSize = puzzle.gridSpacing;
             if (dlg.ShowDialog() == DialogResult.OK) 
             {
                 // puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
-                puzzle.recentre(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
+                // puzzle.recentre(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
+                puzzle.gridSpacing = Math.Max(10, Math.Max(dlg.GridSize,500));
+                puzzle.resizeToFit(pictureBox1);
                 pictureBox1.Invalidate();
             }
         }
@@ -169,15 +182,18 @@ namespace Mosaic_editor
 
         private void pictureBox1_Resize(object sender, EventArgs e)
         {
-            recenterPuzzle();
-        }
-
-        private void recenterPuzzle()
-        {
             if (puzzle == null) return;
-            puzzle.recentre(pictureBox1.Width, pictureBox1.Height);
+            puzzle.resizeToFit(pictureBox1);
+            // recenterPuzzle();
             pictureBox1.Invalidate();
         }
+
+        //private void recenterPuzzle()
+        //{
+        //    if (puzzle == null) return;
+        //    puzzle.recentre(); //  pictureBox1.Width, pictureBox1.Height);
+        //    pictureBox1.Invalidate();
+        //}
 
         private void Form1_KeyDown(object sender, KeyEventArgs e)
         {
@@ -206,5 +222,23 @@ namespace Mosaic_editor
         {
             this.Close();
         }
+
+        private void Form1_MouseWheel(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine($"Form1_MouseWheel: {e.Delta}");
+            if (e.Delta < -100 & puzzle.gridSpacing > MIN_GRID_SPACING)
+            {
+                puzzle.gridSpacing = Math.Max(puzzle.gridSpacing - DELTA_GRID_SPACING, MIN_GRID_SPACING);
+                puzzle.resizeToFit(pictureBox1);
+                pictureBox1.Invalidate();
+            }
+            else if (e.Delta > 100 & puzzle.gridSpacing < MAX_GRID_SPACING)
+            {
+                puzzle.gridSpacing = Math.Min(puzzle.gridSpacing + DELTA_GRID_SPACING, MAX_GRID_SPACING);
+                puzzle.resizeToFit(pictureBox1);
+                pictureBox1.Invalidate();
+            }
+        }
+
     }
 }

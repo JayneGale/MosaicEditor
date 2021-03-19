@@ -14,6 +14,7 @@ and bottom sides.  Fixed.
 - BUG: the saved puzzle (.json) file filename is not set.  Fixed.
 - BUG: when a palette colour is changed the puzzle display does not immediately update.  Fixed.  The colour picker now
 raises a custom "onPaletteChanged" event which I use to call PictureBox1.Invalidate(), triggering a display refresh.
+- FEATURE: mouse wheel now zooms in and out, changing the grid size.
 
 ### 2021-03-10
 - I split ColourPalette class into ColourPalette and ColourPicker classes.  ColourPicker implements
