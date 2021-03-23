@@ -315,6 +315,7 @@ namespace Mosaic_editor.Classes
             var dy = 0;
 
             var activeHexagons = HexagonList.Where(h => h.isActive);    // save a list of the active ones
+            dumpList("activeHexagons", activeHexagons);
             if (activeHexagons.Count() > 0)
             {
                 var currentLeft = activeHexagons.Min(h => h.col);
@@ -395,6 +396,21 @@ namespace Mosaic_editor.Classes
             //refreshPositions();
         }
 
+        private void dumpList(string text, IEnumerable<Hexagon> hexagons)
+        {
+            if (hexagons == null || hexagons.Count() == 0)
+            {
+                Console.WriteLine($"================== HEXAGON LIST IS EMPTY: {text}");
+                return;
+            }
+            Console.WriteLine($"================== HEXAGON DUMP BEGIN: {text}");
+            foreach(var h in hexagons)
+            {
+                Console.WriteLine($"[{h.col},{h.row}] {(h.isActive?"active":"")} {(h.isFixed?"fixed":"")} colors[{string.Join(",",h.colors)}]");
+            }
+            Console.WriteLine($"================== HEXAGON DUMP END");
+        }
+
         private void refreshPositions()
         {
             foreach(var h in HexagonList)
@@ -442,7 +458,7 @@ namespace Mosaic_editor.Classes
                 // yOffset++;
             }
             Console.WriteLine($"save() is moving the puzzle [-{xOffset},-{yOffset}]");
-            // this.translate(-xOffset, -yOffset);  // align the active hexagons to top left corner
+            this.translate(-xOffset, -yOffset);  // align the active hexagons to top left corner
 
             bounds = this.getActiveRange();
             bounds.Dump("after aligning bounds");
@@ -460,6 +476,7 @@ namespace Mosaic_editor.Classes
             puzzle.DateCreated= DateTime.Now;
             puzzle.DateUpdated = DateTime.Now;
             puzzle.HexagonList = activeHexagons.ToList(); // usedHexagons.ToList();
+            dumpList("saving hexagons", activeHexagons);
 
             var dlg = new SaveFileDialog();
             dlg.Filter = "JSON files|*.json";

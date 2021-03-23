@@ -242,7 +242,8 @@ namespace Mosaic_editor.Classes
 
             if (verbose)
             {
-                var font = new Font("Arial", 15);
+                var fontSize = (int)(bounds.Height / 5);
+                var font = new Font("Arial", fontSize);
                 var x = bounds.Left + bounds.Width / 2;
                 var y = bounds.Top + bounds.Height / 2;
                 var text = $"{col},{row}";

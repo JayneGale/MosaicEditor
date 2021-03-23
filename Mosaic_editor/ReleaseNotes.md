@@ -2,10 +2,12 @@
 
 Changes to the Mosaic Editor, most recent first:
 
+### 2020-03-24
+
 ### 2021-03-17
 - FEATURE: made the menu shortcut keys work: Ctrl-O for "Open", etc.
-- when a window is resized the current puzzle is wiped.  This happens when the "Puzzle.recentre()" method runs.
-It is wrongly moving the active tiles instead of correctly centering them.  Fixed.
+- when a window is resized the current puzzle disappears.  This happens when the "Puzzle.recentre()" method runs.
+It is wrongly moving the active tiles completely off screen, instead of correctly centering them.  Fixed.
 - BUG: the editor draws slightly more hexagons than actually fit in the window, overflowing the right
 and bottom sides.  Fixed.
 - BUG: when a puzzle is saved and reloaded the colours are lost.  Fixed.

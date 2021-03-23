@@ -1,6 +1,8 @@
 ﻿# Mosaic Editor
 A Windows Forms app to edit puzzles for the Velocity Studio "Mosaic" hex puzzle web app.
 
+Read the [Release Notes](ReleaseNotes.md) for detailed information.
+
 ### Introduction
 This application provides a simple graphical editor for hexagonal puzzle patterns.  It saves and
 reads patterns in a file format understood by and shared by the Mosaic web app.
