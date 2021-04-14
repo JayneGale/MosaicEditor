@@ -8,7 +8,7 @@ using System.Windows.Forms;
 
 namespace Mosaic_editor.Classes
 {
-    class ColourPalette
+    public class ColourPalette
     {
         public int currentColourIndex = 1;
         private Color currentColour = Color.Red;
@@ -35,7 +35,17 @@ namespace Mosaic_editor.Classes
             Console.WriteLine("PALETTE:", colors);
         }
 
-        public ColourPalette(List<Color> colors)
+        internal void setColors(List<Color> colors)
+        {
+            this.colors = colors;
+        }
+
+        //public ColourPalette(List<Color> colors)
+        //{
+        //    this.colors = colors;
+        //}
+
+        internal void reload(List<Color> colors)
         {
             this.colors = colors;
         }

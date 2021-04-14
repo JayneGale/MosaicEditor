@@ -2,7 +2,27 @@
 
 Changes to the Mosaic Editor, most recent first:
 
-### 2020-03-24
+### 2021-04-15
+- CHANGE: the editor now centres its display on tile [0,0], and no longer tries to "re-center" or anything like that.  Changed the code which calculates tile positions accordingly.
+- CHANGE: added the "Save" dialog box allowing the setting of the properties of the puzzle before saving.
+- CHANGE: added the "Copy to Mosaic Engine" file menu option to simplify deployment (but only on my setup).
+- CHANGE: added PuzzleDifficulty and PuzzleType enumerations (in Constants.cs)\
+- CHANGE: changed the hatching style used on fixed tiles to improve readability.
+- CHANGE: added a 'centre' function to allow you to specify the centre tile of the puzzle, i.e. the tile around which this puzzle should spin.
+
+### 2021-03-31
+- BUG: after loading a puzzle, changing any colour in the colour picker does not immediately refresh the colours on the puzzle.  Fixed.
+- TODO: control-click to select the colour from any triangle.  Done.
+- TODO: get the javascript client ("Mosaic Puzzle Engine" sorry!) going again with this new file format.
+- BUG: clearing the puzzle does not clear the "fixed" hexangles.
+- FEATURE: made the display of "fixed" hexangles clearer.  Gold outline, and a lighter hatch pattern.  Done.
+
+### 2021-03-24
+- GRATUITOUS CHANGE: redesigned the coordinate system to the new 'no holes' version.  Fixed all the resulting crashes.
+- BUG: reloading the colour picker triggers a picturebox resize event! (because it clears the toolbar briefly).  Fixed.
+- BUG: puzzles display correctly when reloaded, UNTIL you click anywhere, when all other hexes disappear.  Fixed.  Caused
+by not setting coloured triangles "active" when reloading from files.
+- BUG: after loading a puzzle, changing any colour in the colour picker does not immediately refresh the colours on the puzzle.
 
 ### 2021-03-17
 - FEATURE: made the menu shortcut keys work: Ctrl-O for "Open", etc.

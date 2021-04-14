@@ -77,7 +77,7 @@ namespace Mosaic_editor.Classes
                 Brush brush = new SolidBrush(color);
                 if (isFixed)
                 {
-                    brush = new HatchBrush(HatchStyle.Percent40, color, Color.White);
+                    brush = new HatchBrush(HatchStyle.Percent90, color, Color.White);
                 }
                 g.FillPath(brush, outline);
             }

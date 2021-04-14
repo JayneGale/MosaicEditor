@@ -10,7 +10,22 @@ namespace Mosaic_editor.Classes
 {
    internal class ColourPicker
     {
-        public int currentColourIndex = 1;
+        public int currentColourIndex
+        {
+            get
+            {
+                return _currentColourIndex;
+            }
+            set
+            {
+                _currentColourIndex = value;
+                var color = palette.getColor(value);
+                currentColour = color;
+                current.BackColor = color;
+            }
+        }
+        private int _currentColourIndex = 1;
+
         private Color currentColour = Color.Red;
 
         private ToolStripButton current;
@@ -25,13 +40,24 @@ namespace Mosaic_editor.Classes
             this.toolStrip = toolStrip;
             this.palette = palette;
 
-            reloadPalette();
+            reloadColourPicker(palette.getColors());
         }
 
-        internal void reloadPalette()
+        internal void reloadColourPicker(List<Color> colors)
         {
-            toolStrip.Items.Clear();
+            palette.setColors(colors);
 
+            // toolStrip.Items.Clear(); => triggers a picturebox resize!
+            // Work-around: insert a temp placeholder
+            toolStrip.Items.Insert(0, new ToolStripLabel { Text = "TEMPORARY LABEL!" });
+
+            // Remove everything except Items[0] (the temporary placeholder)
+            while (toolStrip.Items.Count > 1)
+            {
+                toolStrip.Items.RemoveAt(1);
+            }
+
+            // Now add the toolbar controls we actually want...
             current = new ToolStripButton
             {
                 BackColor = Color.Red,
@@ -40,6 +66,9 @@ namespace Mosaic_editor.Classes
                 Margin = new Padding(0, 0, 6, 3),
             };
             toolStrip.Items.Add(current);
+
+            // ..now can safely remove that placeholder
+            toolStrip.Items.RemoveAt(0);
 
             toolStrip.Items.Add(new ToolStripLabel
             {
@@ -65,14 +94,14 @@ namespace Mosaic_editor.Classes
                         {
                             palette.setColor((int)b.Tag, dlg.Color);        // colors[(int)b.Tag] = dlg.Color;
                             b.BackColor = dlg.Color;
-                            onPaletteChanged(new EventArgs());
+                            onPaletteChanged(new EventArgs());              // fire an "onPaletteChanged" event
                         }
                     }
                     else
                     {
                         currentColourIndex = (int)b.Tag;
-                        currentColour = b.BackColor;
-                        current.BackColor = b.BackColor;
+                        //currentColour = b.BackColor;
+                        //current.BackColor = b.BackColor;
                     }
                 };
                 toolStrip.Items.Add(b);

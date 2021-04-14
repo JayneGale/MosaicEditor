@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Mosaic_editor.Classes
 {
-    class Hexagon
+    public class Hexagon
     {
         public int row;
         public int col;
@@ -44,6 +44,7 @@ namespace Mosaic_editor.Classes
                 foreach (int i in Enumerable.Range(0, value.Length))
                 {
                     triangles[i].colorNo = value[i];
+                    triangles[i].isActive = triangles[i].colorNo > 0;
                 }
             }
         }
@@ -64,15 +65,6 @@ namespace Mosaic_editor.Classes
             this.row = row;
             this.col = col;
 
-            // These are the screen coordinates of the centre of the hexagon
-            //int xCentre = x;
-            //int yCentre = y;
-
-            //int height = (int)(Constants.COS30 * gridSpacing);
-            //var width = gridSpacing;
-
-            // bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
-
             triangles = new List<Triangle>();
 
             for (int i = 0; i < 6; i++)
@@ -86,28 +78,6 @@ namespace Mosaic_editor.Classes
                 triangles.Add(t);
                 upsideDown = !upsideDown;
 
-                // Set bounds for each triangle: the bounding box's upper left corner
-                //switch (i)
-                //{
-                //    case 0:
-                //        t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
-                //        break;
-                //    case 1:
-                //        t.bounds = new Rectangle(xCentre, yCentre, width, height);
-                //        break;
-                //    case 2:
-                //        t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
-                //        break;
-                //    case 3:
-                //        t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
-                //        break;
-                //    case 4:
-                //        t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
-                //        break;
-                //    case 5:
-                //        t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
-                //        break;
-                //}
             }
         }
 
@@ -117,58 +87,6 @@ namespace Mosaic_editor.Classes
         }
 
 
-        //public Hexagon(int row, int col, int x, int y, int gridSpacing)
-        //{
-        //    bool upsideDown = false;
-
-        //    this.row = row;
-        //    this.col = col;
-
-        //    // These are the screen coordinates of the centre of the hexagon
-        //    int xCentre = x;
-        //    int yCentre = y;
-
-        //    int height = (int)(Constants.COS30 * gridSpacing);
-        //    var width = gridSpacing;
-
-        //    bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
-
-        //    triangles = new List<Triangle>();
-
-        //    for (int i = 0; i < 6; i++)
-        //    {
-        //        var t = new Triangle()
-        //        {
-        //            parent = this,
-        //            upsideDown = upsideDown,
-        //        };
-
-        //        // Set bounds for each triangle: the bounding box's upper left corner
-        //        switch (i)
-        //        {
-        //            case 0:
-        //                t.bounds = new Rectangle(xCentre, yCentre - height, width, height);
-        //                break;
-        //            case 1:
-        //                t.bounds = new Rectangle(xCentre, yCentre, width, height);
-        //                break;
-        //            case 2:
-        //                t.bounds = new Rectangle(xCentre - (width / 2), yCentre, width, height);
-        //                break;
-        //            case 3:
-        //                t.bounds = new Rectangle(xCentre - width, yCentre, width, height);
-        //                break;
-        //            case 4:
-        //                t.bounds = new Rectangle(xCentre - width, yCentre - height, width, height);
-        //                break;
-        //            case 5:
-        //                t.bounds = new Rectangle(xCentre - (width / 2), yCentre - height, width, height);
-        //                break;
-        //        }
-        //        upsideDown = !upsideDown;
-        //        triangles.Add(t);
-        //    }
-        //}
 
         // refresh() checks and sets the "isActive" status of this Hexagon depending upon
         // the colours of its triangles.
@@ -204,6 +122,8 @@ namespace Mosaic_editor.Classes
         {
             triangles.ForEach(t => t.clear());
             this.isActive = false;
+            this.isFixed = false;
+            this.isSelected = false;
         }
 
         /// <summary>
@@ -217,6 +137,11 @@ namespace Mosaic_editor.Classes
             calculateOutline();
 
             var pen = new Pen(Color.LightGray, 1);
+
+            if (col == 0 && row == 0)
+            {
+                Console.WriteLine($"drawing tile[0,0] at {bounds.Left}, {bounds.Top}");
+            }
 
             if (isActive)
             {
@@ -239,6 +164,13 @@ namespace Mosaic_editor.Classes
 
             // Draw hexagon outline
             g.DrawPath(pen, outline);
+
+            if (isFixed)
+            {
+                pen.Color = Color.Gold;
+                pen.Width = 5;
+                g.DrawPath(pen, outline);
+            }
 
             if (verbose)
             {
@@ -277,16 +209,27 @@ namespace Mosaic_editor.Classes
         /// Including all its contained triangles
         /// </summary>
         /// <param name="gridSpacing"></param>
-        internal void refreshPosition(int gridSpacing)
+        internal void refreshPosition(int x0, int y0, int gridSpacing)
         {
-            var height = (int)(gridSpacing * Constants.COS30);  // the height of a triangle
             var width = gridSpacing;    // the width of a triangle
+            var height = (int)(gridSpacing * Constants.COS30);  // the height of a triangle
 
-            var margin = 20;    // px
-            var x = (int)(margin + width + (col * width * 1.5));
-            var y = (int)(margin + height + (row * height));
+            var margin = 0; //  20;    // px
+            //var x = x0 + (int)(margin + width + (col * width * 1.5));
+            //var y = y0 + (int)(margin + height + (row * height * 2));
+            var x = x0 + (int)(col * width * 1.5);
+            var y = y0 + row * height * 2;
+            if ((col & 1) == 1)
+            {
+                // 1, 3, 5, ...
+                y -= height;
+            }
 
-            bounds = new Rectangle(x - width, y - height, width * 2, height * 2);
+            bounds = new Rectangle(x - width, y - height, width * 2, height * 2);   // ..twice the width and height of a triangle
+            if (col == 0 && row == 0)
+            {
+                Console.WriteLine($"positioned tile[0,0] at {bounds.Left}, {bounds.Top}; centred on {x}, {y}");
+            }
 
             triangles[0].bounds = new Rectangle(x, y - height, width, height);
             triangles[1].bounds = new Rectangle(x, y, width, height);

@@ -60,6 +60,10 @@ namespace Mosaic_editor
                     {
                         selectedTriangle.parent.clear();
                     }
+                    else if (Control.ModifierKeys == Keys.Control)
+                    {
+                        picker.currentColourIndex = selectedTriangle.colorNo;
+                    }
                     else
                     {
                         Console.WriteLine($"Changing to color {picker.currentColourIndex}");
@@ -120,7 +124,15 @@ namespace Mosaic_editor
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            puzzle.save();
+            if (puzzle.IsEmpty)
+            {
+                MessageBox.Show("This puzzle has no pieces yet!", "Cannot Save", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                var dlg = new frmSave(puzzle);
+                dlg.ShowDialog();
+            }
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
@@ -129,7 +141,8 @@ namespace Mosaic_editor
             if (newPuzzle != null)
             {
                 puzzle = newPuzzle;
-                picker.reloadPalette();
+                picker.reloadColourPicker(puzzle.colors);
+                // picker.onPaletteChanged += Picker_onPaletteChanged;
                 puzzle.resizeToFit(pictureBox1); //  pictureBox1.Width, pictureBox1.Height);
                 pictureBox1.Invalidate();
             }
@@ -202,10 +215,10 @@ namespace Mosaic_editor
             {
                switch(e.KeyCode)
                 {
-                    case Keys.O:
+                    case Keys.O:        // Control-O
                         openToolStripMenuItem_Click(this, e);
                         break;
-                    case Keys.S:
+                    case Keys.S:        // Control-S
                         saveToolStripMenuItem_Click(this, e);
                         break;
                     case Keys.N:
@@ -213,6 +226,29 @@ namespace Mosaic_editor
                         break;
                     case Keys.X:
                         exitToolStripMenuItem_Click(this, e);
+                        break;
+                }
+            }
+            else
+            {
+                switch(e.KeyCode)
+                {
+                    case Keys.C:    // set as centre tile [0,0]
+                        puzzle.centreSelectedTile();
+                        pictureBox1.Invalidate();
+                        break;
+
+                    case Keys.D:
+                        puzzle.deleteSelectedTile();
+                        pictureBox1.Invalidate();
+                        break;
+
+                    case Keys.F:    // toggle "fixed"
+                        fixedToolStripMenuItem_Click(this, e);
+                        break;
+
+                    case Keys.F1:   // Help
+                        helpToolStripMenuItem_Click(this, e);
                         break;
                 }
             }
@@ -240,5 +276,38 @@ namespace Mosaic_editor
             }
         }
 
+        private void debugToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            puzzle.dumpList("debug:", puzzle.HexagonList.Where(h => h.isActive));
+        }
+
+        private void helpToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var f = new frmHelp();
+            f.ShowDialog();
+        }
+
+        private void saveToMosaicEngineToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            var source = Path.Combine(myDocuments, "mosaic", Constants.PUZZLE_SET_FILE);
+            var dest = Path.Combine(@"D:\Data\Code\vue\mosaic\client\src\js", Constants.PUZZLE_SET_FILE);
+
+            if (MessageBox.Show($@"Copy the current puzzle set to the Mosaic Engine folder?
+
+Copy from {source}.
+
+Copy to {dest}.", "Confirm copy", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            {
+                try
+                {
+                    File.Copy(source, dest, true);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+        }
     }
 }

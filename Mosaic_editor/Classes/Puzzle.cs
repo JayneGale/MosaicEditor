@@ -7,10 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Mosaic_editor.Classes.Constants;
 
 namespace Mosaic_editor.Classes
 {
-    class Puzzle
+    public class Puzzle
     {
         public DateTime DateCreated { get; private set; }
         public DateTime DateUpdated { get; private set; }
@@ -26,10 +27,20 @@ namespace Mosaic_editor.Classes
 
         public int cols { get; private set; }
         public int rows { get; private set; }
+        internal bool IsEmpty {
+            get {
+                if (HexagonList == null) return true;
+                if (HexagonList.Any(h => h.isActive)) return false;
+                return true;
+            }
+        }
 
         public string name = "A First Puzzle";
-        public string difficulty = "Hard";
-        public int repeats = 3;
+        public PuzzleDifficulty difficulty = PuzzleDifficulty.EASY;
+        public PuzzleType puzzleType = PuzzleType.MATCH3;
+
+        public int swaps = 1;
+        public int plays = 3;
         public bool dontMangle = false;
         public bool fixedColors = false;
 
@@ -45,8 +56,6 @@ namespace Mosaic_editor.Classes
         /// The constructor takes the dimensions of the picture box as parameters, and
         /// fills the picture box with hexagons.
         /// </summary>
-        /// <param name="width">in pixels</param>
-        /// <param name="height">in pixels</param>
         /// <param name="gridSpacing">in pixels</param>
         // public Puzzle(PictureBox pictureBox, int gridSpacing, ColourPalette palette)
         public Puzzle(int gridSpacing, ColourPalette palette)
@@ -54,11 +63,6 @@ namespace Mosaic_editor.Classes
             this.gridSpacing = gridSpacing;
             this.palette = palette;
             this.HexagonList = new List<Hexagon>();
-            //this.windowWidth = width;
-            //this.windowHeight = height;
-            //CreateHexArray(); //  width, height);
-            //resizeToFit(pictureBox);
-            //refreshPositions();
         }
 
         internal void resizeToFit(PictureBox pictureBox)
@@ -83,21 +87,25 @@ namespace Mosaic_editor.Classes
             this.cols = (int)Math.Floor((unitsAcross - 0.5) / 1.5);
 
             var triangleHeight = this.gridSpacing * Constants.COS30;
-            var unitsDown = (windowHeight - MARGINS) / triangleHeight;
-            this.rows = (int)Math.Floor(unitsDown - 1);
-            Console.WriteLine($"this puzzle has {cols} columns and {rows} rows");
+            var unitsDown = (windowHeight - triangleHeight - MARGINS) / (triangleHeight * 2); // var unitsDown = (windowHeight - MARGINS) / triangleHeight;
+            this.rows = (int)Math.Floor(unitsDown);
+
+            Console.WriteLine($"this canvas has {cols} columns and {rows} rows");
 
             // row and col are simple counters
-            int col0 = 1;
-            for (int row = 0; row < rows; row++)
+            // int col0 = 1;
+            int row = -(int)Math.Ceiling(rows / 2M)  + 1;
+            for (int y = 0; y < rows; y++)
             {
-                for (int col = col0; col < cols; col += 2)
+                int col = -(int)Math.Ceiling(cols / 2M) + 1;
+                for (int x = 0; x < cols; x++) //for (int col = col0; col < cols; col += 2)
                 {
                     var hex = new Hexagon(row, col);
                     hex.parent = this;
                     HexagonList.Add(hex);
+                    col++;
                 }
-                col0 = 1 - col0;
+                row++;
             }
         }
 
@@ -112,7 +120,12 @@ namespace Mosaic_editor.Classes
 
         internal Color getColor(int colorNo)
         {
-            return palette.getColor(colorNo);
+            if (palette != null)
+            {
+                return palette.getColor(colorNo);
+            }
+            Console.WriteLine("ERROR: puzzle palette has not been initialised");
+            return Color.Azure;
         }
 
         /// <summary>
@@ -147,6 +160,9 @@ namespace Mosaic_editor.Classes
             {
                 hex.draw(g);
             }
+
+            g.DrawLine(Pens.Red, 0, 0, windowWidth, windowHeight);
+            g.DrawLine(Pens.Red, 0, windowHeight, windowWidth, 0);
         }
 
         internal void clear()
@@ -176,6 +192,7 @@ namespace Mosaic_editor.Classes
                     try
                     {
                         var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
+                       
                         result.RepairLinks();
                         // result.refreshPositions();
                         result.recreatePalette();
@@ -206,7 +223,9 @@ namespace Mosaic_editor.Classes
         /// </summary>
         private void recreatePalette()
         {
-            this.palette = new ColourPalette(colors);
+            // this.palette = new ColourPalette(colors);
+            this.palette = new ColourPalette(colors.Count);
+            this.palette.reload(colors);
         }
 
         internal Range2D getActiveRange()
@@ -226,7 +245,15 @@ namespace Mosaic_editor.Classes
 
             return result;
         }
-        
+
+        internal void centreSelectedTile()
+        {
+            if (selectedHexagon == null) return;
+            var offsetX = selectedHexagon.col;
+            var offsetY = selectedHexagon.row;
+            Console.WriteLine($"Offset all tiles by [{offsetX}, {offsetY}]");
+        }
+
         internal Range2D getWindowRange()
         {
             if (HexagonList.Count > 0)
@@ -243,6 +270,11 @@ namespace Mosaic_editor.Classes
             }
         }
 
+        internal void deleteSelectedTile()
+        {
+            throw new NotImplementedException();
+        }
+
         /// <summary>
         /// Move the active puzzle pieces within the window.
         /// Used for (a) re-centering and (b) normalising to top left corner
@@ -255,19 +287,11 @@ namespace Mosaic_editor.Classes
 
             if (activeHexagons.Count() > 0)
             {
-                var leftMost = activeHexagons.Min(h => h.col);
-                var topMost = activeHexagons.Min(h => h.row);
-
-                // Validate dx and dy.
-                // Not all x,y coords are valid, because x and y must be of opposite parity.
-                // In other words if x is even y must be odd and vice versa.
-                // Therefore => to preserve this when translating dx, dy must be of the SAME parity.
-                if ((dx & 1) != (dy & 1))
+                // dx MUST be even.
+                if ((dx & 1) == 1)
                 {
-                    if (leftMost > 0)
-                        dx--;
-                    else
-                        dx++;   // this should fix it
+                    if (dx > 0) dx--;
+                    else dx++;
                 }
 
                 // Now move the active hexagons by dx, dy
@@ -310,12 +334,13 @@ namespace Mosaic_editor.Classes
             // this.windowWidth = width;
             // this.windowHeight = height;
             // if (gridSize > 0) this.gridSpacing = gridSize;  // ..otherwise it remains unchanged from its previous value
+            // return;
 
             var dx = 0;
             var dy = 0;
 
             var activeHexagons = HexagonList.Where(h => h.isActive);    // save a list of the active ones
-            dumpList("activeHexagons", activeHexagons);
+            // dumpList("activeHexagons", activeHexagons);
             if (activeHexagons.Count() > 0)
             {
                 var currentLeft = activeHexagons.Min(h => h.col);
@@ -337,66 +362,17 @@ namespace Mosaic_editor.Classes
 
                 dx = newLeft - currentLeft;
                 dy = newTop - currentTop;
+
+                // restore those active hexagons
+                HexagonList = activeHexagons.ToList();
             }
 
-            // transate also regenerates the hex grid
-            translate(dx, dy);
+            // translate also regenerates the hex grid
+            translate(0, 0); // translate(dx, dy);
 
-            //// Adjust to the nearest valid hex position
-            //if ((yOffset & 1) == 1)
-            //{
-            //    // Its in an odd row, so must be in an even column
-            //    if ((xOffset & 1) == 1)
-            //    {
-            //        xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
-            //    }
-            //}
-            //else
-            //{
-            //    // Its in an even row, so has to be in an odd column
-            //    if ((xOffset & 1) == 0)
-            //    {
-            //        xOffset = (xOffset > 0) ? xOffset - 1 : xOffset + 1;
-            //    }
-            //}
-            //Console.WriteLine($"..recentre() puts the corrected window centre at {xOffset},{yOffset}");
-
-            //xOffset -= bounds.x1;
-            //yOffset -= bounds.y1;
-            //// NOTE: Not all offsets are valid!  Row 0 only has columns 1, 3, 5, ... and row 1 has columns 0, 2, 4, ... etc.
-            //// Valid offsets include:
-            ////      1,-1 1,+1 3,-1 3+1 etc.
-            ////      2,0 4,0 6,0 etc..
-            //// i.e. if xOffset is odd, yOffset must also be odd.
-            ////      if xOffset is even, yOffset must also be even.
-
-            //if ((xOffset & 1) != (yOffset & 1)) {
-            //    // One is odd and one is even.  Fix!
-            //    yOffset = (yOffset > 0) ? yOffset - 1 : yOffset + 1;
-            //}
-            //Console.WriteLine($"recentre will offset this puzzle by {xOffset},{yOffset}");
-
-            //// re-apply the active ones into the new list
-            //foreach (var hex in activeHexagons)
-            //{
-            //    hex.col += xOffset;
-            //    hex.row += yOffset;
-            //    Console.WriteLine($"Hex moved to: {hex.col}, {hex.row}");
-            //    var match = HexagonList.FirstOrDefault(hex2 => hex2.col == hex.col && hex2.row == hex.row);
-            //    if (match != null)
-            //    {
-            //        HexagonList.Add(hex);
-            //        HexagonList.Remove(match);
-            //    }
-            //    else
-            //    {
-            //        Console.WriteLine($"..found no place for tile[{hex.col},{hex.row}]!");
-            //    }
-            //}
-            //refreshPositions();
         }
 
-        private void dumpList(string text, IEnumerable<Hexagon> hexagons)
+        internal void dumpList(string text, IEnumerable<Hexagon> hexagons)
         {
             if (hexagons == null || hexagons.Count() == 0)
             {
@@ -406,16 +382,24 @@ namespace Mosaic_editor.Classes
             Console.WriteLine($"================== HEXAGON DUMP BEGIN: {text}");
             foreach(var h in hexagons)
             {
-                Console.WriteLine($"[{h.col},{h.row}] {(h.isActive?"active":"")} {(h.isFixed?"fixed":"")} colors[{string.Join(",",h.colors)}]");
+                var triangles = h.triangles.Select(t => t.isActive ? "active" : "-");
+                Console.WriteLine($"[{h.col},{h.row}] {(h.isActive?"active":"")} {(h.isFixed?"fixed":"")} colors[{string.Join(",",h.colors)}] triangles[{string.Join(",",triangles)}]");
             }
             Console.WriteLine($"================== HEXAGON DUMP END");
         }
 
         private void refreshPositions()
         {
+            int x0 = (int)(windowWidth / 2);
+            int y0 = (int)(windowHeight / 2);
+            //x0 = 0;
+            //y0 = 0;
+
+            Console.WriteLine($"Puzzle.refreshPositions(): {x0}, {y0}");
+
             foreach(var h in HexagonList)
             {
-                h.refreshPosition(this.gridSpacing);
+                h.refreshPosition(x0, y0, this.gridSpacing);
             }
         }
 
@@ -435,37 +419,28 @@ namespace Mosaic_editor.Classes
         /// <summary>
         /// TODO
         /// </summary>
-        internal void save()
+        internal bool save()
         {
             var activeHexagons = HexagonList.Where(h => h.isActive);    // LINQ
 
-            if (activeHexagons.Count() == 0) return;
+            if (activeHexagons.Count() == 0) return false;
 
             var bounds = this.getActiveRange();
 
-            //Console.WriteLine($"crop: {colMin},{rowMin} - {colMax},{ rowMax}");
-            bounds.Dump();
-            int xOffset = bounds.x1;
-            int yOffset = bounds.y1;
-            if ((yOffset & 1) != (yOffset & 1))
-            {
-                // MUST both be odd or both even!  Not the case this time, so fix it:
-                yOffset = yOffset < 1 ? yOffset++ : yOffset--;
-            }
-            if (xOffset == 0 && yOffset == 0)   // [0,0] is invalid
-            {
-                xOffset++;
-                // yOffset++;
-            }
-            Console.WriteLine($"save() is moving the puzzle [-{xOffset},-{yOffset}]");
-            this.translate(-xOffset, -yOffset);  // align the active hexagons to top left corner
+            ////Console.WriteLine($"crop: {colMin},{rowMin} - {colMax},{ rowMax}");
+            //bounds.Dump();
+            //int xOffset = -bounds.x1;
+            //int yOffset = -bounds.y1;
 
-            bounds = this.getActiveRange();
-            bounds.Dump("after aligning bounds");
-            // Console.WriteLine($"after aligning bounds: {bounds.Left},{bounds.Top} - {bounds.Right},{bounds.Bottom}");
+            //Console.WriteLine($"save() is moving the puzzle [{xOffset},{yOffset}]");
+            //this.translate(xOffset, yOffset);  // align the active hexagons to top left corner
 
-            // var usedHexagons = HexagonList.Where(h => h.row >= rowMin && h.row <= rowMax && h.col >= colMin && h.col <= colMax);
-            var usedHexagons = HexagonList.Where(h => bounds.contains(h)); // h.row >= bounds.Top && h.row < bounds.Bottom && h.col >= bounds.Left && h.col < bounds.Right);
+            //bounds = this.getActiveRange();
+            //bounds.Dump("after aligning bounds");
+            //// Console.WriteLine($"after aligning bounds: {bounds.Left},{bounds.Top} - {bounds.Right},{bounds.Bottom}");
+
+            //// var usedHexagons = HexagonList.Where(h => h.row >= rowMin && h.row <= rowMax && h.col >= colMin && h.col <= colMax);
+            //// var usedHexagons = HexagonList.Where(h => bounds.contains(h)); // h.row >= bounds.Top && h.row < bounds.Bottom && h.col >= bounds.Left && h.col < bounds.Right);
 
             var puzzle =(Puzzle)this.MemberwiseClone();
 
@@ -499,7 +474,13 @@ namespace Mosaic_editor.Classes
                 File.WriteAllText(dlg.FileName, json);
 
                 var merger = new PuzzleMerger();
-                merger.run(dlg.FileName, "puzzleSet1.js");   // tell the merger where the last puzzle was saved
+                merger.run(dlg.FileName, PUZZLE_SET_FILE);   // tell the merger where the last puzzle was saved
+
+                return true;
+            }
+            else
+            {
+                return false;
             }
 
         }
