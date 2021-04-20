@@ -252,9 +252,9 @@ namespace Mosaic_editor
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(131, 247);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(105, 13);
+            this.label3.Size = new System.Drawing.Size(150, 13);
             this.label3.TabIndex = 7;
-            this.label3.Text = "Number of tile swaps";
+            this.label3.Text = "Maximum number of tile swaps";
             // 
             // frmSave
             // 

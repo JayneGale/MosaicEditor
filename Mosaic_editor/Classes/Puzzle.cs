@@ -94,11 +94,11 @@ namespace Mosaic_editor.Classes
 
             // row and col are simple counters
             // int col0 = 1;
-            int row = -(int)Math.Ceiling(rows / 2M)  + 1;
-            for (int y = 0; y < rows; y++)
+            int row = -(int)Math.Ceiling(rows / 2M) - 2;
+            for (int y = 0; y < rows + 4; y++)
             {
-                int col = -(int)Math.Ceiling(cols / 2M) + 1;
-                for (int x = 0; x < cols; x++) //for (int col = col0; col < cols; col += 2)
+                int col = -(int)Math.Ceiling(cols / 2M) - 2;
+                for (int x = 0; x < cols + 4; x++) //for (int col = col0; col < cols; col += 2)
                 {
                     var hex = new Hexagon(row, col);
                     hex.parent = this;
@@ -161,8 +161,9 @@ namespace Mosaic_editor.Classes
                 hex.draw(g);
             }
 
-            g.DrawLine(Pens.Red, 0, 0, windowWidth, windowHeight);
-            g.DrawLine(Pens.Red, 0, windowHeight, windowWidth, 0);
+            // crosshairs
+            //g.DrawLine(Pens.Red, 0, 0, windowWidth, windowHeight);
+            //g.DrawLine(Pens.Red, 0, windowHeight, windowWidth, 0);
         }
 
         internal void clear()

@@ -16,7 +16,7 @@ namespace Mosaic_editor.Classes
         internal bool verbose = true;
 
         public bool isFixed = false;
-        public int matchOn = 3;             // number of adjacent triangles which must match
+        // public int matchOn = 3;             // number of adjacent triangles which must match
         internal bool isSelected = false;
 
         // The box which defines the bounds of this hexagon
@@ -29,7 +29,7 @@ namespace Mosaic_editor.Classes
 
         internal List<Triangle> triangles;
 
-        public int[] colors {
+        public string colors {
             get
             {
                 var result = new int[6];
@@ -37,13 +37,18 @@ namespace Mosaic_editor.Classes
                 {
                     result[i] = triangles[i].colorNo;
                 }
-                return result;
+                return String.Join(",", result);
             }
             set
             {
+                var colorNos = value.Split(',');
                 foreach (int i in Enumerable.Range(0, value.Length))
                 {
-                    triangles[i].colorNo = value[i];
+                    triangles[i].colorNo = 0;   // default
+                    if (int.TryParse(colorNos[i], out int c))
+                    {
+                        triangles[i].colorNo = c;
+                    }
                     triangles[i].isActive = triangles[i].colorNo > 0;
                 }
             }

@@ -36,6 +36,11 @@ namespace Mosaic_editor
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToMosaicEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.makeThisTheCentreTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toggleFixedTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.clearToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.resizePuzzleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.fixedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -45,11 +50,6 @@ namespace Mosaic_editor
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.makeThisTheCentreTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.toggleFixedTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.deleteToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToMosaicEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -78,9 +78,9 @@ namespace Mosaic_editor
             this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem,
+            this.saveToMosaicEngineToolStripMenuItem,
             this.toolStripMenuItem1,
-            this.exitToolStripMenuItem,
-            this.saveToMosaicEngineToolStripMenuItem});
+            this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
             this.fileToolStripMenuItem.Text = "&File";
@@ -89,7 +89,7 @@ namespace Mosaic_editor
             // 
             this.newToolStripMenuItem.Name = "newToolStripMenuItem";
             this.newToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+N";
-            this.newToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.newToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.newToolStripMenuItem.Text = "&New";
             this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
@@ -97,7 +97,7 @@ namespace Mosaic_editor
             // 
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+O";
-            this.openToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.openToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.openToolStripMenuItem.Text = "&Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
@@ -105,22 +105,61 @@ namespace Mosaic_editor
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.saveToolStripMenuItem.Text = "&Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
             this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(143, 6);
+            this.toolStripMenuItem1.Size = new System.Drawing.Size(256, 6);
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
             this.exitToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+X";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(146, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
+            // 
+            // saveToMosaicEngineToolStripMenuItem
+            // 
+            this.saveToMosaicEngineToolStripMenuItem.Name = "saveToMosaicEngineToolStripMenuItem";
+            this.saveToMosaicEngineToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
+            this.saveToMosaicEngineToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.saveToMosaicEngineToolStripMenuItem.Text = "Copy set to Mosaic Engine";
+            this.saveToMosaicEngineToolStripMenuItem.Click += new System.EventHandler(this.saveToMosaicEngineToolStripMenuItem_Click);
+            // 
+            // editToolStripMenuItem
+            // 
+            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.makeThisTheCentreTileToolStripMenuItem,
+            this.toggleFixedTileToolStripMenuItem,
+            this.deleteToolStripMenuItem});
+            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
+            this.editToolStripMenuItem.Text = "&Edit";
+            // 
+            // makeThisTheCentreTileToolStripMenuItem
+            // 
+            this.makeThisTheCentreTileToolStripMenuItem.Name = "makeThisTheCentreTileToolStripMenuItem";
+            this.makeThisTheCentreTileToolStripMenuItem.ShortcutKeyDisplayString = "C";
+            this.makeThisTheCentreTileToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.makeThisTheCentreTileToolStripMenuItem.Text = "Make this the centre tile";
+            // 
+            // toggleFixedTileToolStripMenuItem
+            // 
+            this.toggleFixedTileToolStripMenuItem.Name = "toggleFixedTileToolStripMenuItem";
+            this.toggleFixedTileToolStripMenuItem.ShortcutKeyDisplayString = "F";
+            this.toggleFixedTileToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.toggleFixedTileToolStripMenuItem.Text = "Toggle fixed tile";
+            // 
+            // deleteToolStripMenuItem
+            // 
+            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
+            this.deleteToolStripMenuItem.ShortcutKeyDisplayString = "D";
+            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
+            this.deleteToolStripMenuItem.Text = "Delete this tile";
             // 
             // clearToolStripMenuItem
             // 
@@ -194,45 +233,6 @@ namespace Mosaic_editor
             this.toolStripLabel1.Name = "toolStripLabel1";
             this.toolStripLabel1.Size = new System.Drawing.Size(212, 16);
             this.toolStripLabel1.Text = "(This toolstrip is populated at run time)";
-            // 
-            // editToolStripMenuItem
-            // 
-            this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.makeThisTheCentreTileToolStripMenuItem,
-            this.toggleFixedTileToolStripMenuItem,
-            this.deleteToolStripMenuItem});
-            this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 20);
-            this.editToolStripMenuItem.Text = "&Edit";
-            // 
-            // makeThisTheCentreTileToolStripMenuItem
-            // 
-            this.makeThisTheCentreTileToolStripMenuItem.Name = "makeThisTheCentreTileToolStripMenuItem";
-            this.makeThisTheCentreTileToolStripMenuItem.ShortcutKeyDisplayString = "C";
-            this.makeThisTheCentreTileToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.makeThisTheCentreTileToolStripMenuItem.Text = "Make this the centre tile";
-            // 
-            // toggleFixedTileToolStripMenuItem
-            // 
-            this.toggleFixedTileToolStripMenuItem.Name = "toggleFixedTileToolStripMenuItem";
-            this.toggleFixedTileToolStripMenuItem.ShortcutKeyDisplayString = "F";
-            this.toggleFixedTileToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.toggleFixedTileToolStripMenuItem.Text = "Toggle fixed tile";
-            // 
-            // deleteToolStripMenuItem
-            // 
-            this.deleteToolStripMenuItem.Name = "deleteToolStripMenuItem";
-            this.deleteToolStripMenuItem.ShortcutKeyDisplayString = "D";
-            this.deleteToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
-            this.deleteToolStripMenuItem.Text = "Delete this tile";
-            // 
-            // saveToMosaicEngineToolStripMenuItem
-            // 
-            this.saveToMosaicEngineToolStripMenuItem.Name = "saveToMosaicEngineToolStripMenuItem";
-            this.saveToMosaicEngineToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
-            this.saveToMosaicEngineToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.saveToMosaicEngineToolStripMenuItem.Text = "Copy set to Mosaic Engine";
-            this.saveToMosaicEngineToolStripMenuItem.Click += new System.EventHandler(this.saveToMosaicEngineToolStripMenuItem_Click);
             // 
             // Form1
             // 
