@@ -25,13 +25,11 @@ namespace Mosaic_editor
         {
             txtName.Text = puzzle.name;
 
-            rbEasy.Checked = puzzle.difficulty == PuzzleDifficulty.EASY;
-            rbMedium.Checked = puzzle.difficulty == PuzzleDifficulty.MEDIUM;
-            rbHard.Checked = puzzle.difficulty == PuzzleDifficulty.HARD;
+            txtTier.Value = puzzle.tier;
 
             rbMatch1.Checked = puzzle.puzzleType == PuzzleType.MATCH1;
-            rbMatch2.Checked = puzzle.puzzleType == PuzzleType.MATCH2;
             rbMatch3.Checked = puzzle.puzzleType == PuzzleType.MATCH3;
+            rbMatch5.Checked = puzzle.puzzleType == PuzzleType.MATCH5;
 
             chkDontMangle.Checked = puzzle.dontMangle;
             chkFixedColors.Checked = puzzle.fixedColors;
@@ -44,23 +42,17 @@ namespace Mosaic_editor
         {
             puzzle.name = txtName.Text.Trim();
 
-            if (rbEasy.Checked)
-                puzzle.difficulty = PuzzleDifficulty.EASY;
-            else if (rbMedium.Checked)
-                puzzle.difficulty = PuzzleDifficulty.MEDIUM;
-            else
-                puzzle.difficulty = PuzzleDifficulty.HARD;
-
             if (rbMatch1.Checked)
                 puzzle.puzzleType = PuzzleType.MATCH1;
-            else if (rbMatch2.Checked)
-                puzzle.puzzleType = PuzzleType.MATCH2;
-            else
+            else if (rbMatch3.Checked)
                 puzzle.puzzleType = PuzzleType.MATCH3;
+            else
+                puzzle.puzzleType = PuzzleType.MATCH5;
 
             puzzle.dontMangle = chkDontMangle.Checked;
             puzzle.fixedColors = chkFixedColors.Checked;
 
+            puzzle.tier = (int)txtTier.Value;
             puzzle.swaps = (int)txtSwaps.Value;
             puzzle.plays = (int)txtPlays.Value;
 

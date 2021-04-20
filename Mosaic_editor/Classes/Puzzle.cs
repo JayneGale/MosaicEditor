@@ -36,9 +36,10 @@ namespace Mosaic_editor.Classes
         }
 
         public string name = "A First Puzzle";
-        public PuzzleDifficulty difficulty = PuzzleDifficulty.EASY;
+        // public PuzzleDifficulty difficulty = PuzzleDifficulty.EASY;
         public PuzzleType puzzleType = PuzzleType.MATCH3;
 
+        public int tier = 1;
         public int swaps = 1;
         public int plays = 3;
         public bool dontMangle = false;

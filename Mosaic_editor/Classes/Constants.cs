@@ -15,18 +15,18 @@ namespace Mosaic_editor.Classes
 
         internal static Color BLANK_COLOR = Color.Silver;
 
-        public enum PuzzleDifficulty
-        {
-            EASY = 1,
-            MEDIUM,
-            HARD
-        }
+        //public enum PuzzleDifficulty
+        //{
+        //    EASY = 1,
+        //    MEDIUM,
+        //    HARD
+        //}
 
         public enum PuzzleType
         {
             MATCH1 = 1,
-            MATCH2,
-            MATCH3
+            MATCH3 = 3,
+            MATCH5 = 5
         }
 
         public static string PUZZLE_SET_FILE = "puzzleSet1.js";
