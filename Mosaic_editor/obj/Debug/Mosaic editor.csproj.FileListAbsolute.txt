@@ -28,3 +28,4 @@ D:\Data\Code\Mosaic editor\Mosaic_editor\obj\Debug\Mosaic editor.exe
 D:\Data\Code\Mosaic editor\Mosaic_editor\obj\Debug\Mosaic editor.pdb
 D:\Data\Code\Mosaic editor\Mosaic_editor\obj\Debug\Mosaic_editor.frmHelp.resources
 D:\Data\Code\Mosaic editor\Mosaic_editor\obj\Debug\Mosaic_editor.frmSave.resources
+D:\Data\Code\Mosaic editor\Mosaic_editor\obj\Debug\Mosaic_editor.frmPreferences.resources

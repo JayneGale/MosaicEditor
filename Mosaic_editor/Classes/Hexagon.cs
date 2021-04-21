@@ -42,7 +42,7 @@ namespace Mosaic_editor.Classes
             set
             {
                 var colorNos = value.Split(',');
-                foreach (int i in Enumerable.Range(0, value.Length))
+                foreach (int i in Enumerable.Range(0, colorNos.Length))
                 {
                     triangles[i].colorNo = 0;   // default
                     if (int.TryParse(colorNos[i], out int c))

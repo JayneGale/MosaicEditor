@@ -27,8 +27,10 @@ namespace Mosaic_editor.Classes
 
         public int cols { get; private set; }
         public int rows { get; private set; }
-        internal bool IsEmpty {
-            get {
+        internal bool IsEmpty
+        {
+            get
+            {
                 if (HexagonList == null) return true;
                 if (HexagonList.Any(h => h.isActive)) return false;
                 return true;
@@ -169,7 +171,7 @@ namespace Mosaic_editor.Classes
 
         internal void clear()
         {
-            foreach(var hex in HexagonList)
+            foreach (var hex in HexagonList)
             {
                 hex.clear();
             }
@@ -194,7 +196,7 @@ namespace Mosaic_editor.Classes
                     try
                     {
                         var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
-                       
+
                         result.RepairLinks();
                         // result.refreshPositions();
                         result.recreatePalette();
@@ -382,10 +384,10 @@ namespace Mosaic_editor.Classes
                 return;
             }
             Console.WriteLine($"================== HEXAGON DUMP BEGIN: {text}");
-            foreach(var h in hexagons)
+            foreach (var h in hexagons)
             {
                 var triangles = h.triangles.Select(t => t.isActive ? "active" : "-");
-                Console.WriteLine($"[{h.col},{h.row}] {(h.isActive?"active":"")} {(h.isFixed?"fixed":"")} colors[{string.Join(",",h.colors)}] triangles[{string.Join(",",triangles)}]");
+                Console.WriteLine($"[{h.col},{h.row}] {(h.isActive ? "active" : "")} {(h.isFixed ? "fixed" : "")} colors[{string.Join(",", h.colors)}] triangles[{string.Join(",", triangles)}]");
             }
             Console.WriteLine($"================== HEXAGON DUMP END");
         }
@@ -399,7 +401,7 @@ namespace Mosaic_editor.Classes
 
             Console.WriteLine($"Puzzle.refreshPositions(): {x0}, {y0}");
 
-            foreach(var h in HexagonList)
+            foreach (var h in HexagonList)
             {
                 h.refreshPosition(x0, y0, this.gridSpacing);
             }
@@ -407,11 +409,11 @@ namespace Mosaic_editor.Classes
 
         private void RepairLinks()
         {
-            foreach(var hex in HexagonList)
+            foreach (var hex in HexagonList)
             {
                 hex.parent = this;
 
-                foreach(var t in hex.triangles)
+                foreach (var t in hex.triangles)
                 {
                     t.parent = hex;
                 }
@@ -429,54 +431,47 @@ namespace Mosaic_editor.Classes
 
             var bounds = this.getActiveRange();
 
-            ////Console.WriteLine($"crop: {colMin},{rowMin} - {colMax},{ rowMax}");
-            //bounds.Dump();
-            //int xOffset = -bounds.x1;
-            //int yOffset = -bounds.y1;
-
-            //Console.WriteLine($"save() is moving the puzzle [{xOffset},{yOffset}]");
-            //this.translate(xOffset, yOffset);  // align the active hexagons to top left corner
-
-            //bounds = this.getActiveRange();
-            //bounds.Dump("after aligning bounds");
-            //// Console.WriteLine($"after aligning bounds: {bounds.Left},{bounds.Top} - {bounds.Right},{bounds.Bottom}");
-
-            //// var usedHexagons = HexagonList.Where(h => h.row >= rowMin && h.row <= rowMax && h.col >= colMin && h.col <= colMax);
-            //// var usedHexagons = HexagonList.Where(h => bounds.contains(h)); // h.row >= bounds.Top && h.row < bounds.Bottom && h.col >= bounds.Left && h.col < bounds.Right);
-
-            var puzzle =(Puzzle)this.MemberwiseClone();
+            var puzzle = (Puzzle)this.MemberwiseClone();
 
             puzzle.colors = this.palette.getColors();
 
-            // puzzle.Name = this.Name;
-            // puzzle.Difficulty = this.Difficulty;
-            puzzle.DateCreated= DateTime.Now;
+            puzzle.DateCreated = DateTime.Now;
             puzzle.DateUpdated = DateTime.Now;
             puzzle.HexagonList = activeHexagons.ToList(); // usedHexagons.ToList();
             dumpList("saving hexagons", activeHexagons);
 
+            var puzzleFolders = Properties.Settings.Default.PuzzleFolders;
+            if (puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0]))
+            {
+
+                MessageBox.Show("No puzzle folder has been set.  Please go to File | Preferences and fix this.", "Mosaic Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+            string baseFolder = puzzleFolders[0];
+
+            var tierFolder = Path.Combine(baseFolder, $"tier {puzzle.tier}");
+            if (!Directory.Exists(tierFolder))
+            {
+                Directory.CreateDirectory(tierFolder);
+            }
+
             var dlg = new SaveFileDialog();
             dlg.Filter = "JSON files|*.json";
-            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            dlg.InitialDirectory = Path.Combine(myDocuments, "mosaic");
-            if (!Directory.Exists(dlg.InitialDirectory)) Directory.CreateDirectory(dlg.InitialDirectory);
-            dlg.FileName = "mosaic puzzles.json";
+            // var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            // if (!Directory.Exists(dlg.InitialDirectory)) Directory.CreateDirectory(dlg.InitialDirectory);
+            dlg.InitialDirectory = tierFolder; // Path.Combine(myDocuments, "mosaic");
+            dlg.FileName = puzzle.name + ".json";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 puzzle.filename = dlg.FileName;
 
-                //var settings = new JsonSerializerSettings { 
-                //    Formatting = Formatting.Indented,
-                //    MaxDepth = 20,
-                //    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-                //};
                 var json = JsonConvert.SerializeObject(puzzle, Formatting.Indented);
 
                 Console.WriteLine($"Saving to {dlg.FileName}");
                 File.WriteAllText(dlg.FileName, json);
 
                 var merger = new PuzzleMerger();
-                merger.run(dlg.FileName, PUZZLE_SET_FILE);   // tell the merger where the last puzzle was saved
+                merger.run(baseFolder, PUZZLE_SET_FILE);   // tell the merger where the last puzzle was saved
 
                 return true;
             }

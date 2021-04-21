@@ -289,9 +289,31 @@ namespace Mosaic_editor
 
         private void saveToMosaicEngineToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var source = Path.Combine(myDocuments, "mosaic", Constants.PUZZLE_SET_FILE);
-            var dest = Path.Combine(@"D:\Data\Code\vue\mosaic\client\src\js", Constants.PUZZLE_SET_FILE);
+            //var myDocuments = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+            //var source = Path.Combine(myDocuments, "mosaic", Constants.PUZZLE_SET_FILE);
+            //var dest = Path.Combine(@"D:\Data\Code\vue\mosaic\client\src\js", Constants.PUZZLE_SET_FILE);
+
+            var puzzleFolders = Properties.Settings.Default.PuzzleFolders;
+            if (puzzleFolders.Count == 0)
+            {
+                MessageBox.Show("No puzzle folder has been set.  Please go to File | Preferences and fix this.", "Mosaic Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var sourceFolder = puzzleFolders[0];
+            var source = Path.Combine(sourceFolder, Constants.PUZZLE_SET_FILE);
+            if (!File.Exists(source))
+            {
+                MessageBox.Show($"Cannot find puzzle set \"{source}\"!", "Mosaic Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var destFolder = Properties.Settings.Default.PuzzleEngineFolder;
+            if (!Directory.Exists(destFolder))
+            {
+                MessageBox.Show("No puzzle engine folder has been set.  Please go to File | Preferences and fix this.", "Mosaic Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var dest = Path.Combine(destFolder, Constants.PUZZLE_SET_FILE);
 
             if (MessageBox.Show($@"Copy the current puzzle set to the Mosaic Engine folder?
 
@@ -308,6 +330,12 @@ Copy to {dest}.", "Confirm copy", MessageBoxButtons.OKCancel, MessageBoxIcon.Que
                     MessageBox.Show(ex.Message);
                 }
             }
+        }
+
+        private void preferencesToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var dlg = new frmPreferences();
+            dlg.ShowDialog();
         }
     }
 }

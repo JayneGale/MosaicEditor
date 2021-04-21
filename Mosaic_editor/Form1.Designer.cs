@@ -34,9 +34,9 @@ namespace Mosaic_editor
             this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.saveToMosaicEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripSeparator();
             this.exitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.saveToMosaicEngineToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.makeThisTheCentreTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toggleFixedTileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -50,6 +50,8 @@ namespace Mosaic_editor
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.toolStrip1 = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+            this.preferencesToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.toolStrip1.SuspendLayout();
@@ -80,6 +82,8 @@ namespace Mosaic_editor
             this.saveToolStripMenuItem,
             this.saveToMosaicEngineToolStripMenuItem,
             this.toolStripMenuItem1,
+            this.preferencesToolStripMenuItem,
+            this.toolStripMenuItem2,
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 20);
@@ -98,7 +102,7 @@ namespace Mosaic_editor
             this.openToolStripMenuItem.Name = "openToolStripMenuItem";
             this.openToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+O";
             this.openToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.openToolStripMenuItem.Text = "&Open";
+            this.openToolStripMenuItem.Text = "&Open..";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
             // saveToolStripMenuItem
@@ -106,8 +110,16 @@ namespace Mosaic_editor
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+S";
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.saveToolStripMenuItem.Text = "&Save";
+            this.saveToolStripMenuItem.Text = "&Save..";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
+            // 
+            // saveToMosaicEngineToolStripMenuItem
+            // 
+            this.saveToMosaicEngineToolStripMenuItem.Name = "saveToMosaicEngineToolStripMenuItem";
+            this.saveToMosaicEngineToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
+            this.saveToMosaicEngineToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
+            this.saveToMosaicEngineToolStripMenuItem.Text = "&Copy set to Mosaic Engine";
+            this.saveToMosaicEngineToolStripMenuItem.Click += new System.EventHandler(this.saveToMosaicEngineToolStripMenuItem_Click);
             // 
             // toolStripMenuItem1
             // 
@@ -121,14 +133,6 @@ namespace Mosaic_editor
             this.exitToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
             this.exitToolStripMenuItem.Text = "E&xit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
-            // 
-            // saveToMosaicEngineToolStripMenuItem
-            // 
-            this.saveToMosaicEngineToolStripMenuItem.Name = "saveToMosaicEngineToolStripMenuItem";
-            this.saveToMosaicEngineToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+M";
-            this.saveToMosaicEngineToolStripMenuItem.Size = new System.Drawing.Size(259, 22);
-            this.saveToMosaicEngineToolStripMenuItem.Text = "Copy set to Mosaic Engine";
-            this.saveToMosaicEngineToolStripMenuItem.Click += new System.EventHandler(this.saveToMosaicEngineToolStripMenuItem_Click);
             // 
             // editToolStripMenuItem
             // 
@@ -234,6 +238,18 @@ namespace Mosaic_editor
             this.toolStripLabel1.Size = new System.Drawing.Size(212, 16);
             this.toolStripLabel1.Text = "(This toolstrip is populated at run time)";
             // 
+            // preferencesToolStripMenuItem
+            // 
+            this.preferencesToolStripMenuItem.Name = "preferencesToolStripMenuItem";
+            this.preferencesToolStripMenuItem.Size = new System.Drawing.Size(265, 22);
+            this.preferencesToolStripMenuItem.Text = "&Preferences..";
+            this.preferencesToolStripMenuItem.Click += new System.EventHandler(this.preferencesToolStripMenuItem_Click);
+            // 
+            // toolStripMenuItem2
+            // 
+            this.toolStripMenuItem2.Name = "toolStripMenuItem2";
+            this.toolStripMenuItem2.Size = new System.Drawing.Size(256, 6);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -281,6 +297,8 @@ namespace Mosaic_editor
         private System.Windows.Forms.ToolStripMenuItem toggleFixedTileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem deleteToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToMosaicEngineToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem preferencesToolStripMenuItem;
+        private System.Windows.Forms.ToolStripSeparator toolStripMenuItem2;
     }
 }
 

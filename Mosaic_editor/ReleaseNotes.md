@@ -2,6 +2,18 @@
 
 Changes to the Mosaic Editor, most recent first:
 
+### 2021-04-21
+- CHANGE: removed puzzle "difficulty" attribute, added "tier" to replace it.
+- FEATURE: a new File | Preferences dialog lets you set the working puzzle folder, and the Mosaic Engine folder.
+  - The working puzzle folder is the one where individual puzzles are saved, in subfolders names "tier 1", "tier 2", etc.
+  This is also the folder into which the full set are a saved, as "puzzleSet1.js".  You can maintain more than one set of
+puzzles by using more than one working folder, each with its own tier subfolders.
+  - The Mosaic Engine folder is the folder where that puzzle set file is copied, to bring it into action.
+- CHANGE: The File | Save dialog now lets you specify "tier".
+- CHANGE: The File | Save process now scans the "tier N" subfolders for puzzle files when building the full puzzle set.  All puzzles must be in one of those folders.
+- Puzzle files in each tier folder are read in alphabetic order, and this order determines the level number of each.
+- Tier folders are added to the puzzle set in  alphabetic order, and this determines their tier number in the engine.
+
 ### 2021-04-15
 - CHANGE: the editor now centres its display on tile [0,0], and no longer tries to "re-center" or anything like that.  Changed the code which calculates tile positions accordingly.
 - CHANGE: added the "Save" dialog box allowing the setting of the properties of the puzzle before saving.
