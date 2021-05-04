@@ -58,6 +58,7 @@ namespace Mosaic_editor
 
             if (puzzle.save())
             {
+                puzzle.isDirty = false;
                 this.Close();
             }
         }

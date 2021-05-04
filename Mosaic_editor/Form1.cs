@@ -38,6 +38,36 @@ namespace Mosaic_editor
             puzzle = new Puzzle(Constants.DEFAULT_GRID_SPACING, palette);
             puzzle.resizeToFit(pictureBox1);
             pictureBox1.Invalidate();
+            loadFileList();
+        }
+
+        private void loadFileList()
+        {
+            var puzzleFolders = Properties.Settings.Default.PuzzleFolders;
+            if (puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0])) return;
+            string baseFolder = puzzleFolders[0];
+            tvFiles.Nodes.Clear();
+            var root = new TreeNode
+            {
+                Text = baseFolder
+            };
+            tvFiles.Nodes.Add(root);
+            root.Nodes.AddRange(Directory.GetDirectories(baseFolder).Select(f =>
+                new TreeNode
+                {
+                    Text = Path.GetFileName(f)
+                }
+            ).ToArray());
+            foreach (TreeNode folder in root.Nodes)
+            {
+                folder.Nodes.AddRange(Directory.GetFiles(folder.FullPath, "*.json").Select(f =>
+                new TreeNode
+                    {
+                        Text = Path.GetFileName(f)
+                    }
+                ).ToArray());
+            }
+            root.ExpandAll();
         }
 
         private void Picker_onPaletteChanged(EventArgs e)
@@ -59,6 +89,7 @@ namespace Mosaic_editor
                     if (Control.ModifierKeys == Keys.Shift)
                     {
                         selectedTriangle.parent.clear();
+                        puzzle.isDirty = true;
                     }
                     else if (Control.ModifierKeys == Keys.Control)
                     {
@@ -71,11 +102,13 @@ namespace Mosaic_editor
                         if (selectedTriangle.colorNo == picker.currentColourIndex)
                         {
                             selectedTriangle.colorNo = 0;  // Constants.BLANK_COLOR;
+                            puzzle.isDirty = true;
                         }
                         else
                         {
                             // selectedTriangle.isActive = true;
                             selectedTriangle.colorNo = picker.currentColourIndex;
+                            puzzle.isDirty = true;
                         }
                         selectedTriangle.isActive = true;
                     }
@@ -93,7 +126,7 @@ namespace Mosaic_editor
         private void pictureBox1_Paint(object sender, PaintEventArgs e)
         {
             // All drawing on pictureBox1 is done within this paint event handler
-            
+
             e.Graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
             puzzle.draw(e.Graphics);
@@ -137,7 +170,12 @@ namespace Mosaic_editor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var newPuzzle = Puzzle.load(); //  palette);
+            loadPuzzle();
+        }
+
+        private void loadPuzzle(string filename = "")
+        {
+            var newPuzzle = Puzzle.load(filename);
             if (newPuzzle != null)
             {
                 puzzle = newPuzzle;
@@ -145,6 +183,7 @@ namespace Mosaic_editor
                 // picker.onPaletteChanged += Picker_onPaletteChanged;
                 puzzle.resizeToFit(pictureBox1); //  pictureBox1.Width, pictureBox1.Height);
                 pictureBox1.Invalidate();
+                puzzle.isDirty = false;
             }
         }
 
@@ -173,11 +212,11 @@ namespace Mosaic_editor
         {
             var dlg = new frmResizePuzzle();
             dlg.GridSize = puzzle.gridSpacing;
-            if (dlg.ShowDialog() == DialogResult.OK) 
+            if (dlg.ShowDialog() == DialogResult.OK)
             {
                 // puzzle = new Puzzle(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
                 // puzzle.recentre(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
-                puzzle.gridSpacing = Math.Max(10, Math.Max(dlg.GridSize,500));
+                puzzle.gridSpacing = Math.Max(10, Math.Max(dlg.GridSize, 500));
                 puzzle.resizeToFit(pictureBox1);
                 pictureBox1.Invalidate();
             }
@@ -213,7 +252,7 @@ namespace Mosaic_editor
             // This handles keyboard shortcuts
             if (e.Control)
             {
-               switch(e.KeyCode)
+                switch (e.KeyCode)
                 {
                     case Keys.O:        // Control-O
                         openToolStripMenuItem_Click(this, e);
@@ -231,7 +270,7 @@ namespace Mosaic_editor
             }
             else
             {
-                switch(e.KeyCode)
+                switch (e.KeyCode)
                 {
                     case Keys.C:    // set as centre tile [0,0]
                         puzzle.centreSelectedTile();
@@ -336,6 +375,33 @@ Copy to {dest}.", "Confirm copy", MessageBoxButtons.OKCancel, MessageBoxIcon.Que
         {
             var dlg = new frmPreferences();
             dlg.ShowDialog();
+        }
+
+        private void tvFiles_AfterSelect(object sender, TreeViewEventArgs e)
+        {
+            if (tvFiles.SelectedNode == null) return;
+            var filename = tvFiles.SelectedNode.FullPath;
+
+            if (filename.EndsWith(".json"))
+            {
+                Console.WriteLine($"User selected file {filename}");
+                if (puzzle.isDirty)
+                {
+                    switch (MessageBox.Show("Save changes to the current puzzle first?", "Mosaic Editor", MessageBoxButtons.YesNoCancel))
+                    {
+                        case DialogResult.Cancel:
+                            return;
+                        case DialogResult.Yes:
+                            puzzle.save();
+                            break;
+                        case DialogResult.No:
+                            // carry on...
+                            break;
+                    }
+                }
+                loadPuzzle(filename);
+                loadFileList();
+            }
         }
     }
 }

@@ -2,6 +2,12 @@
 
 Changes to the Mosaic Editor, most recent first:
 
+### 2020-04-28
+- FEATURE: Added a file browser pane, so you can easily see all the current puzzle files.
+  - click on any puzzle file to load it.
+  - the new File | Preferences screen lets you change the root folder.
+  - only one level of subfolders is displayed, as this is all the editor will process.
+
 ### 2021-04-21
 - CHANGE: removed puzzle "difficulty" attribute, added "tier" to replace it.
 - FEATURE: a new File | Preferences dialog lets you set the working puzzle folder, and the Mosaic Engine folder.
