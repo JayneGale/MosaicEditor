@@ -49,6 +49,8 @@ namespace Mosaic_editor
                 engineFolder = DEFAULT_ENGINE_FOLDER;
             }
             txtPuzzleEngineFolder.Text = engineFolder;
+
+            chkShowCoords.Checked = Properties.Settings.Default.ShowTileCoordinates;
         }
 
         private void refreshCombo()
@@ -105,6 +107,9 @@ namespace Mosaic_editor
             {
                 Properties.Settings.Default.PuzzleEngineFolder = engineFolder;
             }
+
+            Properties.Settings.Default.ShowTileCoordinates = chkShowCoords.Checked;
+
             Properties.Settings.Default.Save();
         }
 

@@ -39,6 +39,7 @@ namespace Mosaic_editor
             this.btnBrowseEngineFolder = new System.Windows.Forms.Button();
             this.label2 = new System.Windows.Forms.Label();
             this.txtPuzzleEngineFolder = new System.Windows.Forms.TextBox();
+            this.chkShowCoords = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // btnCancel
@@ -117,13 +118,24 @@ namespace Mosaic_editor
             this.txtPuzzleEngineFolder.Size = new System.Drawing.Size(361, 20);
             this.txtPuzzleEngineFolder.TabIndex = 4;
             // 
+            // chkShowCoords
+            // 
+            this.chkShowCoords.AutoSize = true;
+            this.chkShowCoords.Location = new System.Drawing.Point(116, 138);
+            this.chkShowCoords.Name = "chkShowCoords";
+            this.chkShowCoords.Size = new System.Drawing.Size(127, 17);
+            this.chkShowCoords.TabIndex = 8;
+            this.chkShowCoords.Text = "Show tile coordinates";
+            this.chkShowCoords.UseVisualStyleBackColor = true;
+            // 
             // frmPreferences
             // 
             this.AcceptButton = this.btnSave;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.btnCancel;
-            this.ClientSize = new System.Drawing.Size(638, 194);
+            this.ClientSize = new System.Drawing.Size(638, 200);
+            this.Controls.Add(this.chkShowCoords);
             this.Controls.Add(this.txtPuzzleEngineFolder);
             this.Controls.Add(this.btnBrowseEngineFolder);
             this.Controls.Add(this.label2);
@@ -154,5 +166,6 @@ namespace Mosaic_editor
         private System.Windows.Forms.Button btnBrowseEngineFolder;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.TextBox txtPuzzleEngineFolder;
+        private System.Windows.Forms.CheckBox chkShowCoords;
     }
 }

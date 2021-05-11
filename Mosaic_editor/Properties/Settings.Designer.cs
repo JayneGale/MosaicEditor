@@ -45,5 +45,17 @@ namespace Mosaic_editor.Properties {
                 this["PuzzleEngineFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ShowTileCoordinates {
+            get {
+                return ((bool)(this["ShowTileCoordinates"]));
+            }
+            set {
+                this["ShowTileCoordinates"] = value;
+            }
+        }
     }
 }

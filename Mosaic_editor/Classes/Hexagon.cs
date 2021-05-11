@@ -177,7 +177,7 @@ namespace Mosaic_editor.Classes
                 g.DrawPath(pen, outline);
             }
 
-            if (verbose)
+            if (Properties.Settings.Default.ShowTileCoordinates || (col == 0 && row == 0))
             {
                 var fontSize = (int)(bounds.Height / 5);
                 var font = new Font("Arial", fontSize);
@@ -219,7 +219,7 @@ namespace Mosaic_editor.Classes
             var width = gridSpacing;    // the width of a triangle
             var height = (int)(gridSpacing * Constants.COS30);  // the height of a triangle
 
-            var margin = 0; //  20;    // px
+            // var margin = 0; //  20;    // px
             //var x = x0 + (int)(margin + width + (col * width * 1.5));
             //var y = y0 + (int)(margin + height + (row * height * 2));
             var x = x0 + (int)(col * width * 1.5);

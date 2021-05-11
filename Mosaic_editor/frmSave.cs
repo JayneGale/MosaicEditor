@@ -15,6 +15,8 @@ namespace Mosaic_editor
     {
         Classes.Puzzle puzzle;
 
+        public string filename;
+
         public frmSave(Classes.Puzzle puzzle)
         {
             InitializeComponent();
@@ -58,6 +60,7 @@ namespace Mosaic_editor
 
             if (puzzle.save())
             {
+                this.filename = puzzle.filename;
                 puzzle.isDirty = false;
                 this.Close();
             }

@@ -23,6 +23,20 @@ namespace Mosaic_editor
         const int MAX_GRID_SPACING = 500;
         const int DELTA_GRID_SPACING = 10;
 
+        internal string filename { 
+            get { return _filename; } 
+            set {
+                _filename = value;
+                var formTitle = "Jayne's Mosaic Editor";
+                if (_filename.Length > 0)
+                {
+                    formTitle += " - " + _filename;
+                }
+                this.Text = formTitle;
+            }
+        }
+        internal string _filename;
+
         public Form1()
         {
             InitializeComponent();
@@ -143,6 +157,7 @@ namespace Mosaic_editor
                     puzzle.selectedHexagon = null;
                 }
                 pictureBox1.Invalidate();
+                filename = "";
             }
         }
 
@@ -165,6 +180,8 @@ namespace Mosaic_editor
             {
                 var dlg = new frmSave(puzzle);
                 dlg.ShowDialog();
+                filename = dlg.filename;
+                loadFileList();
             }
         }
 
@@ -184,6 +201,7 @@ namespace Mosaic_editor
                 puzzle.resizeToFit(pictureBox1); //  pictureBox1.Width, pictureBox1.Height);
                 pictureBox1.Invalidate();
                 puzzle.isDirty = false;
+                this.filename = filename;
             }
         }
 

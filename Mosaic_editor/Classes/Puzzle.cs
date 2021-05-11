@@ -37,6 +37,8 @@ namespace Mosaic_editor.Classes
             }
         }
 
+        internal bool isDirty { get; set; }
+
         public string name = "A First Puzzle";
         // public PuzzleDifficulty difficulty = PuzzleDifficulty.EASY;
         public PuzzleType puzzleType = PuzzleType.MATCH3;
@@ -175,6 +177,36 @@ namespace Mosaic_editor.Classes
             {
                 hex.clear();
             }
+            isDirty = false;
+        }
+
+        internal static Puzzle load(string filename)
+        {
+            if (File.Exists(filename))
+            {
+                var text = File.ReadAllText(filename);
+                try
+                {
+                    var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
+
+                    result.RepairLinks();
+                    // result.refreshPositions();
+                    result.recreatePalette();
+                    Console.WriteLine($"Loaded puzzle from {filename}");
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show($"Cannot find file {filename}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+            }
+
+            // Failed
+            return null;
         }
 
         /// <summary>
@@ -190,28 +222,29 @@ namespace Mosaic_editor.Classes
             dlg.Filter = "JSON files|*.json";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                if (File.Exists(dlg.FileName))
-                {
-                    var text = File.ReadAllText(dlg.FileName);
-                    try
-                    {
-                        var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
+                return load(dlg.FileName);
+                //if (File.Exists(dlg.FileName))
+                //{
+                //    var text = File.ReadAllText(dlg.FileName);
+                //    try
+                //    {
+                //        var result = JsonConvert.DeserializeObject(text, typeof(Puzzle)) as Puzzle;
 
-                        result.RepairLinks();
-                        // result.refreshPositions();
-                        result.recreatePalette();
-                        Console.WriteLine($"Loaded puzzle from {dlg.FileName}");
-                        return result;
-                    }
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine(ex.Message);
-                    }
-                }
-                else
-                {
-                    MessageBox.Show($"Cannot find file {dlg.FileName}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
+                //        result.RepairLinks();
+                //        // result.refreshPositions();
+                //        result.recreatePalette();
+                //        Console.WriteLine($"Loaded puzzle from {dlg.FileName}");
+                //        return result;
+                //    }
+                //    catch (Exception ex)
+                //    {
+                //        Console.WriteLine(ex.Message);
+                //    }
+                //}
+                //else
+                //{
+                //    MessageBox.Show($"Cannot find file {dlg.FileName}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                //}
             }
             // a change
 
@@ -464,6 +497,7 @@ namespace Mosaic_editor.Classes
             if (dlg.ShowDialog() == DialogResult.OK)
             {
                 puzzle.filename = dlg.FileName;
+                this.filename = puzzle.filename;
 
                 var json = JsonConvert.SerializeObject(puzzle, Formatting.Indented);
 
