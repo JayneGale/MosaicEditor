@@ -474,7 +474,7 @@ namespace Mosaic_editor.Classes
             dumpList("saving hexagons", activeHexagons);
 
             var puzzleFolders = Properties.Settings.Default.PuzzleFolders;
-            if (puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0]))
+            if (puzzleFolders == null || puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0]))
             {
 
                 MessageBox.Show("No puzzle folder has been set.  Please go to File | Preferences and fix this.", "Mosaic Editor", MessageBoxButtons.OK, MessageBoxIcon.Warning);

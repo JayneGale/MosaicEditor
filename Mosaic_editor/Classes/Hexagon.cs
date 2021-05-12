@@ -41,6 +41,7 @@ namespace Mosaic_editor.Classes
             }
             set
             {
+                // This runs when a puzzle is loaded from file
                 var colorNos = value.Split(',');
                 foreach (int i in Enumerable.Range(0, colorNos.Length))
                 {
@@ -49,7 +50,7 @@ namespace Mosaic_editor.Classes
                     {
                         triangles[i].colorNo = c;
                     }
-                    triangles[i].isActive = triangles[i].colorNo > 0;
+                    triangles[i].isActive = true; // triangles[i].colorNo > 0;
                 }
             }
         }

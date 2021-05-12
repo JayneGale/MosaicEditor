@@ -58,7 +58,7 @@ namespace Mosaic_editor
         private void loadFileList()
         {
             var puzzleFolders = Properties.Settings.Default.PuzzleFolders;
-            if (puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0])) return;
+            if (puzzleFolders  == null || puzzleFolders.Count == 0 || !Directory.Exists(puzzleFolders[0])) return;
             string baseFolder = puzzleFolders[0];
             tvFiles.Nodes.Clear();
             var root = new TreeNode
@@ -131,7 +131,10 @@ namespace Mosaic_editor
                 {
                     // Just select; don't change the colour
                 }
+                Console.WriteLine($"Before refresh: {puzzle.HexagonList.Count(h => h.isActive)} active hex");
                 puzzle.refresh();
+                Console.WriteLine($"After refresh: {puzzle.HexagonList.Count(h => h.isActive)} active hex");
+
                 pictureBox1.Invalidate();   // force a redraw
             }
 
@@ -180,8 +183,11 @@ namespace Mosaic_editor
             {
                 var dlg = new frmSave(puzzle);
                 dlg.ShowDialog();
-                filename = dlg.filename;
-                loadFileList();
+                if (dlg.filename != null)
+                {
+                    filename = dlg.filename;
+                    loadFileList();
+                }
             }
         }
 

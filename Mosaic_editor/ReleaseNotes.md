@@ -2,6 +2,10 @@
 
 Changes to the Mosaic Editor, most recent first:
 
+### 2021-05-12
+- BUG: When first run, this version crashes because the PuzzleFolders setting is null.  Fixed.
+- BUG: After a saved puzzle is reloaded, Any grey tiles disappear the first time you click on one.  Fixed.
+
 ### 2021-05-05
 - FEATURE: added option to display tile coordinates in File | Preferences.
 
