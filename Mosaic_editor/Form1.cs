@@ -51,8 +51,13 @@ namespace Mosaic_editor
             // Note: puzzle does not resize / redraw if the user resizes the window.
             puzzle = new Puzzle(Constants.DEFAULT_GRID_SPACING, palette);
             puzzle.resizeToFit(pictureBox1);
-            pictureBox1.Invalidate();
+            refresh();
             loadFileList();
+        }
+
+        private void refresh()
+        {
+            pictureBox1.Invalidate();
         }
 
         private void loadFileList()
@@ -63,13 +68,15 @@ namespace Mosaic_editor
             tvFiles.Nodes.Clear();
             var root = new TreeNode
             {
-                Text = baseFolder
+                Text = baseFolder,
+                Tag = "root"
             };
             tvFiles.Nodes.Add(root);
             root.Nodes.AddRange(Directory.GetDirectories(baseFolder).Select(f =>
                 new TreeNode
                 {
-                    Text = Path.GetFileName(f)
+                    Text = Path.GetFileName(f),
+                    Tag = "folder=" + f,
                 }
             ).ToArray());
             foreach (TreeNode folder in root.Nodes)
@@ -77,7 +84,8 @@ namespace Mosaic_editor
                 folder.Nodes.AddRange(Directory.GetFiles(folder.FullPath, "*.json").Select(f =>
                 new TreeNode
                     {
-                        Text = Path.GetFileName(f)
+                        Text = Path.GetFileName(f),
+                        Tag = "file=" + f
                     }
                 ).ToArray());
             }
@@ -86,7 +94,8 @@ namespace Mosaic_editor
 
         private void Picker_onPaletteChanged(EventArgs e)
         {
-            pictureBox1.Invalidate();
+            puzzle.isDirty = true;
+            refresh();
         }
 
         private void pictureBox1_MouseClick(object sender, MouseEventArgs e)
@@ -135,7 +144,7 @@ namespace Mosaic_editor
                 puzzle.refresh();
                 Console.WriteLine($"After refresh: {puzzle.HexagonList.Count(h => h.isActive)} active hex");
 
-                pictureBox1.Invalidate();   // force a redraw
+                refresh();   // force a redraw
             }
 
         }
@@ -159,7 +168,7 @@ namespace Mosaic_editor
                     puzzle.selectedHexagon.isSelected = false;
                     puzzle.selectedHexagon = null;
                 }
-                pictureBox1.Invalidate();
+                refresh();
                 filename = "";
             }
         }
@@ -169,7 +178,8 @@ namespace Mosaic_editor
             if (puzzle.selectedHexagon != null)
             {
                 puzzle.selectedHexagon.isFixed = !puzzle.selectedHexagon.isFixed;
-                pictureBox1.Invalidate();
+                puzzle.isDirty = true;
+                refresh();
             }
         }
 
@@ -205,7 +215,7 @@ namespace Mosaic_editor
                 picker.reloadColourPicker(puzzle.colors);
                 // picker.onPaletteChanged += Picker_onPaletteChanged;
                 puzzle.resizeToFit(pictureBox1); //  pictureBox1.Width, pictureBox1.Height);
-                pictureBox1.Invalidate();
+                refresh();
                 puzzle.isDirty = false;
                 this.filename = filename;
             }
@@ -242,7 +252,7 @@ namespace Mosaic_editor
                 // puzzle.recentre(pictureBox1.Width, pictureBox1.Height, dlg.GridSize);
                 puzzle.gridSpacing = Math.Max(10, Math.Max(dlg.GridSize, 500));
                 puzzle.resizeToFit(pictureBox1);
-                pictureBox1.Invalidate();
+                refresh();
             }
         }
 
@@ -261,7 +271,7 @@ namespace Mosaic_editor
             if (puzzle == null) return;
             puzzle.resizeToFit(pictureBox1);
             // recenterPuzzle();
-            pictureBox1.Invalidate();
+            refresh();
         }
 
         //private void recenterPuzzle()
@@ -298,16 +308,19 @@ namespace Mosaic_editor
                 {
                     case Keys.C:    // set as centre tile [0,0]
                         puzzle.centreSelectedTile();
-                        pictureBox1.Invalidate();
+                        puzzle.isDirty = true;
+                        refresh();
                         break;
 
                     case Keys.D:
                         puzzle.deleteSelectedTile();
-                        pictureBox1.Invalidate();
+                        puzzle.isDirty = true;
+                        refresh();
                         break;
 
                     case Keys.F:    // toggle "fixed"
                         fixedToolStripMenuItem_Click(this, e);
+                        puzzle.isDirty = true;
                         break;
 
                     case Keys.F1:   // Help
@@ -329,13 +342,13 @@ namespace Mosaic_editor
             {
                 puzzle.gridSpacing = Math.Max(puzzle.gridSpacing - DELTA_GRID_SPACING, MIN_GRID_SPACING);
                 puzzle.resizeToFit(pictureBox1);
-                pictureBox1.Invalidate();
+                refresh();
             }
             else if (e.Delta > 100 & puzzle.gridSpacing < MAX_GRID_SPACING)
             {
                 puzzle.gridSpacing = Math.Min(puzzle.gridSpacing + DELTA_GRID_SPACING, MAX_GRID_SPACING);
                 puzzle.resizeToFit(pictureBox1);
-                pictureBox1.Invalidate();
+                refresh();
             }
         }
 
@@ -427,5 +440,101 @@ Copy to {dest}.", "Confirm copy", MessageBoxButtons.OKCancel, MessageBoxIcon.Que
                 loadFileList();
             }
         }
+
+        private void makeThisTheCentreTileToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            puzzle.centreSelectedTile();
+            puzzle.isDirty = true;
+        }
+
+        #region TreeView file drag-drop support
+
+        private void tvFiles_ItemDrag(object sender, ItemDragEventArgs e)
+        {
+            var item = (TreeNode)e.Item;
+            if (((String)item.Tag).StartsWith("file="))
+            {
+                DoDragDrop(e.Item, DragDropEffects.Move);
+            }
+        }
+
+        private void tvFiles_DragEnter(object sender, DragEventArgs e)
+        {
+            // e.Effect = DragDropEffects.Move;
+        }
+
+
+        private void tvFiles_DragOver(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                var tv = (TreeView)sender;
+                Point pt = tv.PointToClient(new Point(e.X, e.Y));
+                TreeNode destinationNode = tv.GetNodeAt(pt);
+                if (destinationNode != null)
+                {
+                    var tag = (String)destinationNode.Tag;
+                    if (tag.StartsWith("folder=") || tag.StartsWith("file="))
+                    {
+                        e.Effect = DragDropEffects.Move;
+                    }
+                    else
+                    {
+                        e.Effect = DragDropEffects.None;
+                    }
+                }
+                else
+                {
+                    e.Effect = DragDropEffects.None;
+                }
+            }
+        }
+
+        private void tvFiles_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent("System.Windows.Forms.TreeNode", false))
+            {
+                var tv = (TreeView)sender;
+                Point pt = tv.PointToClient(new Point(e.X, e.Y));
+                TreeNode destinationNode = tv.GetNodeAt(pt);
+                if (destinationNode != null)
+                {
+                    var tag = (String)destinationNode.Tag;
+                    if (tag.StartsWith("file="))
+                    {
+                        destinationNode = destinationNode.Parent;
+                    }
+                    tag = (String)destinationNode.Tag;
+                    if (tag.StartsWith("folder="))
+                    {
+                        TreeNode draggedItem = (TreeNode)e.Data.GetData("System.Windows.Forms.TreeNode");
+                        movePuzzleFile((String)draggedItem.Tag, tag);
+                        destinationNode.Nodes.Add((TreeNode)draggedItem.Clone());
+                        destinationNode.Expand();
+                        draggedItem.Remove();   // remove original node
+                        loadFileList();
+                    }
+                }
+            }
+        }
+
+        private void movePuzzleFile(string sourceFile, string destFolder)
+        {
+            sourceFile = sourceFile.Replace("file=", "");
+            destFolder = destFolder.Replace("folder=", "");
+
+            Console.WriteLine($"movePuzzleFile {destFolder} => {sourceFile}");
+            try
+            {
+                var destFile = Path.Combine(destFolder, Path.GetFileName(sourceFile));
+                File.Move(sourceFile, destFile);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("ERROR: " + ex.Message);
+            }
+        }
+
+        #endregion
     }
 }

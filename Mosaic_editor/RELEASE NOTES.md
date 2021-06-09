@@ -2,6 +2,10 @@
 
 Changes to the Mosaic Editor, most recent first:
 
+### 2021-06-09
+- TODO: Finish the "Centre on this tile" menu function. DONE.
+- TODO: Add drag/drop to the file tree. DONE.
+
 ### 2021-05-12
 - BUG: When first run, this version crashes because the PuzzleFolders setting is null.  Fixed.
 - BUG: After a saved puzzle is reloaded, Any grey tiles disappear the first time you click on one.  Fixed.

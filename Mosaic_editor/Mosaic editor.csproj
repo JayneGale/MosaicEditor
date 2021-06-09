@@ -125,7 +125,7 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <None Include="ReleaseNotes.md" />
+    <None Include="RELEASE NOTES.md" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

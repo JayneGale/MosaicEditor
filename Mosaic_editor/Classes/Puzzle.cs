@@ -288,7 +288,16 @@ namespace Mosaic_editor.Classes
             if (selectedHexagon == null) return;
             var offsetX = selectedHexagon.col;
             var offsetY = selectedHexagon.row;
-            Console.WriteLine($"Offset all tiles by [{offsetX}, {offsetY}]");
+            Console.WriteLine($"Offset all tiles by [{offsetX},{offsetY}]");
+            foreach(var hex in HexagonList)
+            {
+                if (hex.isActive)
+                {
+                    hex.col -= offsetX;
+                    hex.row -= offsetY;
+                }
+            }
+            refreshPositions();
         }
 
         internal Range2D getWindowRange()

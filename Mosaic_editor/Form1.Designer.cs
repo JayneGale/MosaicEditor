@@ -168,6 +168,7 @@ namespace Mosaic_editor
             this.makeThisTheCentreTileToolStripMenuItem.ShortcutKeyDisplayString = "C";
             this.makeThisTheCentreTileToolStripMenuItem.Size = new System.Drawing.Size(215, 22);
             this.makeThisTheCentreTileToolStripMenuItem.Text = "Make this the centre tile";
+            this.makeThisTheCentreTileToolStripMenuItem.Click += new System.EventHandler(this.makeThisTheCentreTileToolStripMenuItem_Click);
             // 
             // toggleFixedTileToolStripMenuItem
             // 
@@ -275,12 +276,17 @@ namespace Mosaic_editor
             // 
             // tvFiles
             // 
+            this.tvFiles.AllowDrop = true;
             this.tvFiles.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tvFiles.Location = new System.Drawing.Point(0, 0);
             this.tvFiles.Name = "tvFiles";
             this.tvFiles.Size = new System.Drawing.Size(273, 741);
             this.tvFiles.TabIndex = 0;
+            this.tvFiles.ItemDrag += new System.Windows.Forms.ItemDragEventHandler(this.tvFiles_ItemDrag);
             this.tvFiles.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.tvFiles_AfterSelect);
+            this.tvFiles.DragDrop += new System.Windows.Forms.DragEventHandler(this.tvFiles_DragDrop);
+            this.tvFiles.DragEnter += new System.Windows.Forms.DragEventHandler(this.tvFiles_DragEnter);
+            this.tvFiles.DragOver += new System.Windows.Forms.DragEventHandler(this.tvFiles_DragOver);
             // 
             // Form1
             // 
